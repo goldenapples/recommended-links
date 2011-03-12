@@ -1,0 +1,182 @@
+@charset "utf-8";
+/*   
+Theme Name: Street Signs
+Theme Slug: roadsigns
+Description: Uses "street sign" icons to show comment and star counts.
+Author: Nathaniel Taintor
+Author URI: http://goldenapplesdesign.com/
+*/
+
+
+ul.reclinkslist {
+	padding-bottom: 6px;
+	position: relative;
+}
+
+ul.reclinkslist a, ul.reclinkslist a:link, ul.reclinkslist a:hover {
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none !important;
+	background: none !important;
+}
+
+ul.reclinkslist li.reclink {
+	position: relative;
+	clear: both;
+	padding: 6px !important;
+	margin-top: 2px;
+	border-top: 1px dotted;
+}
+
+ul.reclinkslist li.reclink div.reclink_commentcount {
+	float: left;
+	clear: left;
+	display: block;
+	width: 38px;
+	height: 21px;
+	padding: 30px 16px 16px 16px;
+	background: url(images/comments-icon.png) top center no-repeat;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: center;
+	color: #000;
+}
+
+ul.reclinkslist li.reclink div.reclink_votecount {
+	float: left;
+	clear: left;
+	display: block;
+	width: 34px;
+	height: 20px;
+	padding: 14px 18px 7px 18px;
+	background: url(images/points-icon.png) top center no-repeat;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	text-align: center;
+	color: #fff;
+}
+	
+ul.reclinkslist li.reclink div.reclink_body {
+	display: block;
+	margin-left: 76px;
+	line-height: 1 !important;
+	text-align: left;
+	width: auto !important;
+}
+
+ul.reclinkslist li.reclink div.reclink_body p.reclink_title {
+	font-family: Georgia, "Times New Roman", Times, serif !important;
+	font-weight: bold;
+	font-size: 14px;
+	color: #814000;
+	margin:0 0 1px 0;
+}
+
+ul.reclinkslist li.reclink div.reclink_body p.reclink_title a, ul.reclinkslist li.reclink div.reclink_body p.reclink_title a:link {
+	text-decoration: none;
+	color: inherit;
+	width: auto !important;
+}
+
+ul.reclinkslist li.reclink div.reclink_body p.reclink_title a:hover {
+	text-decoration: underline;
+	color: #330E02;
+}
+
+ul.reclinkslist li.reclink div.reclink_body p.reclink_href {
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: normal;
+	font-size: 9px;
+	color: #999;
+	margin: 0 0 3px 0;
+	
+}
+
+ul.reclinkslist li.reclink div.reclink_body p {
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: normal;
+	font-size: 10.5px;
+	line-height: 1.25;
+	margin: 0 0 3px 0;
+	color: #000;
+}
+
+span.link_addedby {
+	width: 100%;
+	display:block;
+	margin-top: 6px;
+	text-align: right;
+	font-size: 8px;
+	color: #814000;
+}
+
+#reclink_addform {
+	background: #FCF799;
+	margin: 12px;
+	padding: 6px;
+	clear: left;
+}
+
+#reclink_addform label {
+	width: 25%;
+	margin-right: 6px;
+	text-align: right;
+	float: left;
+}
+
+#reclink_addform input, #reclink_addform textarea {
+	width: 70%;
+}
+
+div.reclinkvotesarea {
+	margin: 0;
+	padding: 12px 0 0 0;
+	width: 70px;
+	height: 16px;
+	clear: left;
+	float: left;
+	position: relative;
+}
+
+div.votesgray {
+	background: url(images/stars-gray.png) bottom left no-repeat;
+}
+
+div.reclinkvotesarea a.reclink-vote, div.reclinkvotesarea a.reclink-vote:visited {
+	float: left;
+	height: 16px !important;
+	width: 14px !important;
+	margin: 0;
+	border: 0;
+	padding: 0 !important;
+	display: block;
+	position: relative;
+}
+
+div.reclinkvotesarea a.reclink-vote:hover {
+	background: transparent url(images/5-stars.png) top left no-repeat !important;
+}
+
+/*
+div.reclinkvotesarea a.reclink_vote_1:hover { 
+	padding-right: 56px !important; background: transparent url(images/1-stars.png) top left no-repeat !important; }
+div.reclinkvotesarea a.reclink_vote_2:hover { 
+	padding: 0 42px 0 14px !important; background: transparent url(images/2-stars.png) top left no-repeat !important; }
+div.reclinkvotesarea a.reclink_vote_3:hover { 
+	padding: 0 28px !important; background: transparent url(images/3-stars.png) top left no-repeat !important; }
+div.reclinkvotesarea a.reclink_vote_4:hover { 
+	padding: 0 14px 0 42px !important; background: transparent url(images/4-stars.png) top left no-repeat !important; }
+div.reclinkvotesarea a.reclink_vote_5:hover { 
+	padding-left: 56px !important; background: transparent url(images/5-stars.png) top left no-repeat !important; }
+*/
+
+#LoginWithAjax_Form { margin: 6px 12px; }
+
+#contentcolumn ul.reclinkslist {
+	list-style: none;
+	font-size: 11px;
+	line-height: 1.25;
+	padding: 0;
+}
