@@ -185,66 +185,8 @@ function reclinks_edit_links() {
 		endswitch;
 	} else {
 	echo '<div id="icon-edit" class="icon32"></div><h2>'.__('Manage / Edit Recommended Links','reclinks_plugin').'</h2>';
-	include(WP_RECLINKS_PLUGIN_PATH.'/includes/pagination.class.php');
-	$items = mysql_num_rows(mysql_query("SELECT id FROM ".WP_RECLINKS_TABLE)); 
-	if($items > 0) {			
-			$p = new pagination;
-			$p->items($items);
-			$p->limit(20); // Limit entries per page
-			$p->target("admin.php?page=reclinks_edit_links");
-			$p->currentPage($_GET[$p->paging]); // Gets and validates the current page
-			$p->calculate(); // Calculates what to show
-			$p->parameterName('paging');
-			$p->adjacents(1); //No. of page away from the current page
-	
-			if(!isset($_GET['paging'])) {
-				$p->page = 1;
-			} else {
-				$p->page = $_GET['paging'];
-			}
-	
-			//Query for limit paging
-			$limit_offset = " LIMIT ".$p->limit." OFFSET ".(($p->page - 1) * $p->limit);
-			?>
-			<div class="tablenav">
-				<div class='tablenav-pages'>
-					<?php echo $p->show();  // Echo out the list of paging. ?>
-				</div>
-			</div><?php
-	} else {
-		echo "No Record Found";
 	}
 
-	global $wpdb;
-	$sql = "SELECT links.*,SUM(votes.vote) AS totalvotes FROM ".WP_RECLINKS_TABLE." AS links, ".WP_RECLINKS_VOTES_TABLE." AS votes WHERE links.id=votes.link_id GROUP BY links.id ORDER BY links.link_addtime DESC".$limit_offset;
-	$links = $wpdb->get_results($wpdb->prepare($sql));	?><table class="widefat">
-    <thead><tr><th>ID</th><th>Link Name/ Destination</th><th>Description</th><th>Tags</th><th>Added by</th><th>Votes / Comments</th></tr></thead>
-    <tfoot><tr><th>ID</th><th>Link Name/ Destination</th><th>Description</th><th>Tags</th><th>Added by</th><th>Votes / Comments</th></tr></tfoot>
-    <tbody><?php foreach ($links as $link) {
-		echo '<tr><td >'.$link->id.'</td><td width="200"><strong><a href="admin.php?page=reclinks_edit_links&action=edit&link='.$link->id.'">';
-		echo apply_filters('the_title',stripslashes($link->link_title)).'</a></strong><br>'.$link->link_href;
-		echo '<div class="row-actions"><span class="edit"><a href="admin.php?page=reclinks_edit_links&action=edit&link='.$link->id.'">Edit</a> | </span>';
-		echo '<span class="edit"><a href="admin.php?page=reclinks_edit_links&action=comments&link='.$link->id.'">View Comments</a> | </span>';
-		echo '<span class="trash"><a href="admin.php?page=reclinks_edit_links&action=delete&link='.$link->id.'">Trash</a></span></div></td>';
-		echo '<td width="300">'.apply_filters('the_excerpt',stripslashes($link->link_description)).'</td><td>';
-		echo '</td><td>';
-		if ($link->link_addedby) {
-			echo get_userdata($link->link_addedby)->display_name;
-		} else echo "Anonymous (".$link->link_addedby_ip.")";
-		echo '<br><small>'.$link->link_addtime.'</small></td>';
-		$commentcount = $wpdb->get_var("SELECT COUNT(id) FROM ".WP_RECLINKS_VOTES_TABLE." WHERE link_id=".$link->id." AND vote_text !=''");
-		echo '<td>'.$link->totalvotes.' votes<br />';
-		if ($commentcount) echo $commentcount.' comments'; ?>
-		</td></tr>
-        <?php } ?></tbody></table>
-    			<div class="tablenav">
-					<div class='tablenav-pages'>
-						<?php echo $p->show();  // Echo out the list of paging. ?>
-					</div>
-				</div>
-	<?php 
-	}
-	echo '</div>';
 }
 
 ?>
