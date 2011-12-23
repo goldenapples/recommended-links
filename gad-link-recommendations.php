@@ -24,6 +24,7 @@ define("WP_RECLINKS_THEME_PATH", WP_RECLINKS_PLUGIN_PATH.'/themes/'.$reclinks_th
 if ( is_admin() )
 	require_once(WP_RECLINKS_PLUGIN_PATH.'/ajax-functions.php');
 
+require_once(WP_RECLINKS_PLUGIN_PATH.'/widgets.php');
 
 // Register custom post type required for this work
 add_action( 'init', 'register_cpt_reclink' );
@@ -70,104 +71,10 @@ function register_cpt_reclink() {
 }
 
 // Activation / deactivation
-register_activation_hook(__FILE__, 'reclinks_install');
+include_once( 'plugin-activation.php' );
+register_activation_hook( __FILE__, 'reclinks_install' );
+register_deactivation_hook( __FILE__, 'reclinks_uninstall');
 
-function reclinks_install() {
-	global $wp_version;
-
-	if (version_compare($wp_version, "3.0", "<")) {
-		deactivate_plugins(basename(__FILE__));
-		wp_die("This plugin requires Wordpress version 3.0 or higher.");
-	}
-
-	global $wpdb;
-
-	// Old table values: if these tables exist, should export data from them into wp_posts table
-	// and delete old tables to clean up.
-	$reclinks_old_table = $wpdb->prefix . "reclinks";
-	$reclinks_old_votes_table = $wpdb->prefix . "reclink_votes";
-
-	if ( $wpdb->get_var( "SHOW TABLES LIKE '$reclinks_old_table'" ) === $reclinks_old_table ) {
-
-		// Old plugin data exists, export it into custom posts.
-		$old_links = $wpdb->get_results( "SELECT * FROM $reclinks_old_table" );
-
-		foreach ( $old_links as $old_link ) {
-			$new_post = wp_insert_post( array( 
-				'post_type' 	=> 'reclink',
-				'post_author' 	=> $old_link->link_addedby,
-				'post_title' 	=> $old_link->link_title,
-				'post_content'	=> $old_link->link_description,
-				'post_excerpt'	=> $old_link->link_href,
-				'post_date_gmt'	=> $old_link->link_addtime,
-				'post_status'	=> 'publish'
-			) );
-			$old_comments = $wpdb->get_results( "SELECT * FROM $reclinks_old_votes_table WHERE link_id = {$old_link->id}" );
-			if ( $old_comments ) {
-				$vote_tally = 0;
-				foreach ( $old_comments as $old_comment ) {
-					$vote_tally += $old_comment->vote;
-					$vote_comment = wp_insert_comment( array(
-						'comment_post_ID' 	=> $new_post,
-						'comment_type'		=> 'reclinks_vote',
-						'comment_author_IP'	=> $old_comment->voter_ip,
-						'comment_date'		=> $old_comment->vote_time,
-						'user_id'			=> $old_comment->voter_id,
-						'comment_content'	=> md5( $new_post . 'reclinks_vote' . $old_comment->vote_time ), // necessary to prevent "duplicate/empty comment" warnings
-						'comment_karma'		=> $old_comment->vote,
-						'comment_approved'	=> 1
-					) );
-					if ( !empty( $old_comment->vote_text ) ) {
-						wp_insert_comment( array(
-							'comment_post_ID'	=> $new_post,
-							'comment_type'		=> 'comment',
-							'comment_author_IP'	=> $old_comment->voter_ip,
-							'comment_date'		=> $old_comment->vote_time,
-							'user_id'			=> $old_comment->voter_id,
-							'comment_content'	=> $old_comment->vote_text
-						) );
-					}
-				}
-				update_post_meta( $new_post, '_vote_score', $vote_tally );
-			}
-
-		}
-
-		// Delete old tables
-		$wpdb->query( "DROP TABLE IF EXISTS $reclinks_old_votes_table" );
-		$wpdb->query( "DROP TABLE IF EXISTS $reclinks_old_table;" );
-	}
-
-
-	if (!get_option('reclinks_plugin_options')) {
-		$reclinks_plugin_defaults = array(
-					'theme'=>'roadsigns',
-					'display'=>'stars',
-					'stars-1-value'=>-1,
-					'stars-1-text'=>'Off topic or irrelevant',
-					'stars-2-value'=>0,
-					'stars-2-text'=>'Wasn\'t all that impressed',
-					'stars-3-value'=>1,
-					'stars-3-text'=>'Liked it',
-					'stars-4-value'=>2,
-					'stars-4-text'=>'Very interesting',
-					'stars-5-value'=>3,
-					'stars-5-text'=>'A+++++',
-					'commenting-enabled'=>true,
-					'tagging-enabled'=>true);
-		
-		update_option('reclinks_plugin_options',$reclinks_plugin_defaults);
-	}
-}
-
-
-register_deactivation_hook(__FILE__,'reclinks_uninstall');
-
-function reclinks_uninstall() {
-	
-	// deactivate plugin
-	
-}	
 
 add_action('admin_menu','reclinks_admin_pages');
 
@@ -226,15 +133,25 @@ function reclink_collect_votes($reclink) {
 	return $votetext;
 }
 
-function reclink_add_reclink($linktitle,$linkhref,$linkdescription,$userID,$userip) {
-	global $wpdb;
-	if ($linkid = $wpdb->get_var($wpdb->prepare("SELECT id FROM ".WP_RECLINKS_TABLE." WHERE link_href LIKE '".$linkhref."'"))) {
-		return array($linkid,'Sorry, that link already exists.',false); 
-	}
-	$wpdb->insert(WP_RECLINKS_TABLE,array('link_href'=>$linkhref,'link_title'=>$linktitle,'link_description'=>$linkdescription,'link_addedby'=>$userID,'link_addedby_ip'=>$userip) );
-	$linkid = $wpdb->insert_id;
-	$wpdb->insert(WP_RECLINKS_VOTES_TABLE,array('link_id'=>$linkid,'vote'=>1,'voter_id'=>$userID,'voter_ip'=>$userip) );
- 	return array($linkid,false,true);
+function gad_add_reclink( $reclink ) {
+	// Check to see if that link already exists
+	$link_exists = get_posts( array(
+		'post_type' => 'reclink',
+		'meta_name' => '_href',
+		'meta_value' => $reclink['reclink_url']
+	) );
+	if ( $link_exists )
+		return false;
+	
+	$link_ID = wp_insert_post( array(
+		'post_type' 	=> 'reclink',
+		'post_author' 	=> $current_user->user_id,
+		'post_title' 	=> $reclink['reclink_title'],
+		'post_content'	=> $reclink['reclink_description'],
+		'post_status'	=> 'publish'
+	) );
+	update_post_meta( $link_ID, '_href', $reclink['reclink_url'] );
+	return $link_ID;
 }
 
 function reclink_add_vote($linkid,$vote,$votetext,$user,$userip) {
