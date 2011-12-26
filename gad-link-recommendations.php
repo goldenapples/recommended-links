@@ -15,16 +15,17 @@ global $wpdb;
 
 
 // Constants, should be useful
-define("WP_RECLINKS_PLUGIN_DIR", path_join(WP_PLUGIN_URL, basename( dirname( __FILE__ ) )));
-define("WP_RECLINKS_PLUGIN_PATH", path_join(ABSPATH.'wp-content/plugins', basename( dirname( __FILE__ ) )));
-define("WP_RECLINKS_THEME_DIR", WP_RECLINKS_PLUGIN_DIR.'/themes/'.$reclinks_theme_options['theme']);
-define("WP_RECLINKS_THEME_PATH", WP_RECLINKS_PLUGIN_PATH.'/themes/'.$reclinks_theme_options['theme']);
+//define("WP_RECLINKS_PLUGIN_DIR", path_join(WP_PLUGIN_URL, basename( dirname( __FILE__ ) )));
+//define("WP_RECLINKS_PLUGIN_PATH", path_join(ABSPATH.'wp-content/plugins', basename( dirname( __FILE__ ) )));
+//define("WP_RECLINKS_THEME_DIR", WP_RECLINKS_PLUGIN_DIR.'/themes/'.$reclinks_theme_options['theme']);
+//define("WP_RECLINKS_THEME_PATH", WP_RECLINKS_PLUGIN_PATH.'/themes/'.$reclinks_theme_options['theme']);
 
 // Required files
-if ( is_admin() )
-	require_once(WP_RECLINKS_PLUGIN_PATH.'/ajax-functions.php');
+require_once( plugin_dir_path( __FILE__ ) . '/user-functions.php' );
+require_once( plugin_dir_path( __FILE__ ) . '/widgets.php' );
+require_once( plugin_dir_path( __FILE__ ) . '/ajax-functions.php' );
+require_once( plugin_dir_path( __FILE__ ) . '/display-filters.php' );
 
-require_once(WP_RECLINKS_PLUGIN_PATH.'/widgets.php');
 
 // Register custom post type required for this work
 add_action( 'init', 'register_cpt_reclink' );
@@ -68,10 +69,15 @@ function register_cpt_reclink() {
     );
 
     register_post_type( 'reclink', $args );
+
+	// register reclinks_votes table so it can be used with $wpdb class
+	global $wpdb;
+	$wpdb->reclinkvotes = $wpdb->prefix . 'reclinks_votes';
+
 }
 
 // Activation / deactivation
-include_once( 'plugin-activation.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'plugin-activation.php' );
 register_activation_hook( __FILE__, 'reclinks_install' );
 register_deactivation_hook( __FILE__, 'reclinks_uninstall');
 
@@ -79,34 +85,12 @@ register_deactivation_hook( __FILE__, 'reclinks_uninstall');
 add_action('admin_menu','reclinks_admin_pages');
 
 function reclinks_admin_pages() {
-	include(WP_RECLINKS_PLUGIN_PATH . '/admin-functions.php');
-	add_menu_page('Recommended Links Plugin Settings','RecLinks','activate_plugins','reclinks_plugin_settings','reclinks_plugin_settings',WP_RECLINKS_PLUGIN_DIR.'/images/icon16.png');
-	add_submenu_page('reclinks_plugin_settings','Recommended Links Plugin Settings','Plugin Settings','activate_plugins','reclinks_plugin_settings','reclinks_plugin_settings');
-//	add_submenu_page('reclinks_plugin_settings','Recommended Links - View / Edit Links','Edit Links','activate_plugins','reclinks_edit_links','reclinks_edit_links');
-}
-
-
-add_action('wp_print_styles','reclinks_styles');
-add_action('init','reclinks_scripts');
-
-function reclinks_styles() {
-	wp_enqueue_style("reclinks-theme-".$reclinks_theme_options['theme'],WP_RECLINKS_THEME_DIR.'/style.css');
-	/* elseif (file_exists(get_stylesheet_directory().'/plugins/gad-link-recommendations/gad-link-recommendations.css')){ 
-		//Child Theme (or just theme)
-		wp_enqueue_style( "gad-link-recommendations", get_stylesheet_directory_uri().'/plugins/gad-link-recommendations/gad-link-recommendations.css' );
-	} elseif (file_exists(get_template_directory().'/plugins/gad-link-recommendations/gad-link-recommendations.css')) { 
-		//Parent Theme (if parent exists)
-		wp_enqueue_style( "gad-link-recommendations", get_template_directory_uri().'/plugins/gad-link-recommendations/gad-link-recommendations.css' );
-	} else { 
-		//Default file in plugin folder
-		wp_enqueue_style( "gad-link-recommendations", WP_RECLINKS_PLUGIN_DIR.'/gad-link-recommendations.css' );
-	}	*/
-	
-	//echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') .'/'. PLUGINDIR . '/gad-link-recommendations/gad-link-recommendations.css" />' . "\n";
-}
-
-function reclinks_scripts() {
-	wp_enqueue_script('scriptaculous-effects',array('prototype'));
+	include( plugin_dir_path( __FILE__ ) . '/admin-functions.php');
+	add_menu_page( 'Recommended Links Plugin Settings', 'RecLinks',
+		'activate_plugins', 'reclinks_plugin_settings', 
+		'reclinks_plugin_settings', plugin_dir_url( __FILE__ ) . '/images/icon16.png' );
+	add_submenu_page( 'reclinks_plugin_settings', 'Recommended Links Plugin Settings', 'Plugin Settings',
+		'activate_plugins', 'reclinks_plugin_settings', 'reclinks_plugin_settings' );
 }
 
 
@@ -132,8 +116,24 @@ function reclink_collect_votes($reclink) {
 	}
 	return $votetext;
 }
-
+/**
+ * @function	gad_add_reclink
+ *
+ * Used to insert a new post of type "reclink". Can be called through
+ * AJAX or directly on init with POST data; has to handle both.
+ *
+ * @param array 	Form data submitted, of the format: array( 
+ * 						'reclink_title' => $reclink_title,
+ * 						'reclink_url'	=> $reclink_url,
+ * 						'reclink_description' 	=> $reclink_description )
+ *
+ * @return 	False on error or exception, post ID of the new reclink if successful
+ */
 function gad_add_reclink( $reclink ) {
+	// Check to see that user is authorized to add link
+	if ( !current_user_can( 'add_reclink' ) )
+		return false;
+
 	// Check to see if that link already exists
 	$link_exists = get_posts( array(
 		'post_type' => 'reclink',
@@ -151,20 +151,75 @@ function gad_add_reclink( $reclink ) {
 		'post_status'	=> 'publish'
 	) );
 	update_post_meta( $link_ID, '_href', $reclink['reclink_url'] );
+	update_post_meta( $link_ID, '_vote_score', 1 );
+
 	return $link_ID;
 }
 
-function reclink_add_vote($linkid,$vote,$votetext,$user,$userip) {
+/**
+ * @function	gad_add_reclink_vote
+ *
+ * Used to record a vote or comment on any recommended link
+ *
+ * @param	int 			ID or object of link to vote / comment on
+ * @param	int				comment ID (or zero for vote on link itself)
+ * @param	int				Vote value (acceptable range of values is set in plugin settings)
+ * @param	int				User ID or WP_User object
+ * @param	string			Current user's IP adddress
+ *
+ * @return	TODO: don't know yet
+ */
+function gad_add_reclink_vote( $reclink, $comment = 0, $vote, $user, $userip ) {
 	global $wpdb;
-	if ($user) $alreadyvoted = $wpdb->get_var("SELECT `id` FROM ".WP_RECLINKS_VOTES_TABLE." WHERE `link_id` = '".$linkid."' AND `voter_id` = '".$user."'");
-	else $alreadyvoted = $wpdb->get_var("SELECT `id` FROM ".WP_RECLINKS_VOTES_TABLE." WHERE `link_id` = '".$linkid."' AND `voter_ip` = '".$userip."'");
-	if ($alreadyvoted) return "You cannot vote twice on the same link.";
-	$wpdb->insert(WP_RECLINKS_VOTES_TABLE,array('link_id'=>$linkid,'vote'=>$vote,'vote_text'=>$votetext,'voter_id'=>$user,'voter_ip'=>$userip) );
-	$voteid = $wpdb->insert_id;
-	return $voteid;
+
+	if ( isset( $user ) ) {
+		$alreadyvoted = $wpdb->get_row( "
+			SELECT * FROM {$wpdb->reclinkvotes}
+			WHERE post_id = $reclink
+			AND comment_id = $comment
+			AND user_id = $user", OBJECT );
+	} else {
+		$alreadyvoted = $wpdb->get_row( "
+			SELECT * FROM {$wpdb->reclinkvotes}
+			WHERE post_id = $reclink
+			AND comment_id = $comment
+			AND user_ip = $user_ip", OBJECT );
+	}
+			
+	if ($alreadyvoted) {
+		$wpdb->update( $wpdb->reclinkvotes,
+			array( 'vote' => $vote ),
+			array( 'id' => $alreadyvoted->id )
+		);
+	} else {
+		$wpdb->insert( $wpdb->reclinkvotes,
+			array(
+			'post_id' 		=> $reclink,
+			'comment_id'	=> $comment,
+			'vote'			=> $vote,
+			'user_id'		=> $user,
+			'user_ip'		=> $userip
+		) );
+	}
+
+	// Update vote count (count everything over again)
+	$new_vote_total = $wpdb->get_var("
+		SELECT SUM(vote) FROM {$wpdb->reclinkvotes}
+		WHERE post_id = $reclink AND comment_id = $comment");
+
+	if ( 0 === $comment) {
+		// vote on post, update post meta value
+		update_post_meta( $reclink, '_vote_score', $new_vote_total );
+	} else {
+		// vote on comment, update comment karma value
+		wp_update_comment( array(
+			'comment_ID' => $comment,
+		   	'comment_karma' => $new_vote_total
+		) );	
+	}
 }
 
-function reclink_show_top_voted($number='8',$time='',$tag='') {
+function reclink_show_top_voted( $number='8', $time='', $tag='' ) {
 	$response = '';
 	$timestamp = '';
 	switch ($time):
@@ -208,22 +263,5 @@ function reclink_show_link($link,$showcomments,$showvotes) {
 	return $response;
 }
 
-function reclink_addlink_form() {
-	echo '<div id="reclink_addform">';
-	if (!current_user_can('edit_posts')) {
-		echo '<h3>Share your favorite unschooling links!</h3><p>You must be logged into to recommend links. You can register here.</p>';
-		wp_register();
-		echo '</div>';
-		return;
-	}
-	echo '<form id="reclink_addlink" action="" method="post">';
-	echo 'Got a link you want to recommend? Submit it here!';
-	echo '<p><label for="reclink_linktitle">Title:</label><input type="text" name="reclink_linktitle"></p>';
-	echo '<p><label for="reclink_linkhref">Address:</label><input type="text" name="reclink_linkhref"></p>';
-	echo '<p><label for="reclink_linkdescription">Description:</label><textarea name="reclink_linkdescription"></textarea></p>';
-	echo '<p><input type="submit" value="Submit link!"></p>';
-	echo '</form></div>';
-}
-	
-	
-	
+
+

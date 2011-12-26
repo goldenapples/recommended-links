@@ -19,9 +19,25 @@ function reclinks_install() {
 
 	global $wpdb;
 	$reclinks_old_table = $wpdb->prefix . "reclinks";
+	$reclinks_new_table = $wpdb->prefix . "reclinks_votes";
 
 	if ( $wpdb->get_var( "SHOW TABLES LIKE '$reclinks_old_table'" ) === $reclinks_old_table )
 		add_action( 'shutdown', 'reclinks_import_old_links');
+
+	if ( $wpdb->get_var( "SHOW TABLES LIKE '$reclinks_new_table'") !== $reclinks_new_table ) {
+		$sql = "CREATE TABLE $reclinks_new_table (
+				id mediumint(9) NOT NULL AUTO_INCREMENT,
+				post_id mediumint(9) NOT NULL,
+				comment_id mediumint(9) NOT NULL,
+				vote tinyint(1) NOT NULL,
+				voter_id mediumint(9) DEFAULT '0' NOT NULL,
+				voter_ip varchar(55) NOT NULL,
+				vote_time TIMESTAMP NOT NULL,
+				UNIQUE KEY id (id)
+				);";
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+	}
 
 	if (!get_option('reclinks_plugin_options')) {
 		$reclinks_plugin_defaults = array(
@@ -47,7 +63,8 @@ function reclinks_install() {
 /**
  * @function	reclinks_import_old_links
  *
- * Run on cron, so as not to block activation...
+ * Run on shutdown hook, so as not to block activation. This means that all links may not show up
+ * immediately, but its better than waiting for minutes to be able to activate the plugin.
  *
  */
 function reclinks_import_old_links() {
@@ -71,6 +88,7 @@ function reclinks_import_old_links() {
 			'post_author' 	=> $old_link->link_addedby,
 			'post_title' 	=> $old_link->link_title,
 			'post_content'	=> $old_link->link_description,
+			'post_date'		=> $old_link->link_addtime,
 			'post_date_gmt'	=> $old_link->link_addtime,
 			'post_status'	=> 'publish'
 		) );
@@ -83,17 +101,14 @@ function reclinks_import_old_links() {
 			$vote_tally = 0;
 			foreach ( $old_comments as $old_comment ) {
 				$vote_tally += $old_comment->vote;
-				$vote_comment = wp_insert_comment( array(
-					'comment_post_ID' 	=> $new_post,
-					'comment_type'		=> 'reclinks_vote',
-					'comment_author_IP'	=> $old_comment->voter_ip,
-					'comment_date'		=> $old_comment->vote_time,
-					'user_id'			=> $old_comment->voter_id,
-					'comment_content'	=> md5( $new_post . 'reclinks_vote' . $old_comment->vote_time ), 
-											// necessary to prevent "duplicate/empty comment" warnings
-					'comment_karma'		=> $old_comment->vote,
-					'comment_approved'	=> 1
-				) );
+				$wpdb->insert( $wpdb->prefix . 'reclinks_votes', 
+					array( 	'post_id' 	=> $new_post,
+							'comment_id'=>	0,
+							'vote'		=> $old_comment->vote,
+							'voter_id'	=> $old_comment->voter_id,
+							'voter_ip'	=> $old_comment->voter_ip,
+							'vote_time'	=> $old_comment->vote_time )
+					);
 				if ( !empty( $old_comment->vote_text ) ) {
 					wp_insert_comment( array(
 						'comment_post_ID'	=> $new_post,

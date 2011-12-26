@@ -29,7 +29,7 @@ function gad_reclinks_widgets() {
 			if ( !empty( $title ) ) 
 				echo $before_title . $title . $after_title;
 		?>
-			<form id="reclinks_addlink" action="" method="POST">
+			<form class="reclinks_addlink" action="" method="POST">
 				<label for="reclink_URL"><?php _e('Link URL', 'gad_reclinks'); ?></label>
 				<input type="text" name="reclink_URL" />
 				<label for="reclink_title"><?php _e('Link Title', 'gad_reclinks'); ?></label>
@@ -70,5 +70,18 @@ add_action( 'wp_enqueue_scripts', 'gad_reclinks_enqueues' );
 
 function gad_reclinks_enqueues() {
 	wp_enqueue_script( 'reclinks-scripts', plugin_dir_url( __FILE__ ) . 'js/reclinks-scripts.js', array( 'jquery' ), false, true );
-	wp_localize_script( 'reclinks-scripts', 'reclinks', array( 'ajaxURL' => admin_url( 'admin-ajax.php' ) ) );
+	wp_localize_script( 'reclinks-scripts', 'reclinks', array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ) ) );
+//	wp_enqueue_style("reclinks-theme-".$reclinks_theme_options['theme'],WP_RECLINKS_THEME_DIR.'/style.css');
+	/* elseif (file_exists(get_stylesheet_directory().'/plugins/gad-link-recommendations/gad-link-recommendations.css')){ 
+		//Child Theme (or just theme)
+		wp_enqueue_style( "gad-link-recommendations", get_stylesheet_directory_uri().'/plugins/gad-link-recommendations/gad-link-recommendations.css' );
+	} elseif (file_exists(get_template_directory().'/plugins/gad-link-recommendations/gad-link-recommendations.css')) { 
+		//Parent Theme (if parent exists)
+		wp_enqueue_style( "gad-link-recommendations", get_template_directory_uri().'/plugins/gad-link-recommendations/gad-link-recommendations.css' );
+	} else { 
+		//Default file in plugin folder
+		wp_enqueue_style( "gad-link-recommendations", WP_RECLINKS_PLUGIN_DIR.'/gad-link-recommendations.css' );
+	}	*/
+	
+	//echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') .'/'. PLUGINDIR . '/gad-link-recommendations/gad-link-recommendations.css" />' . "\n";
 }
