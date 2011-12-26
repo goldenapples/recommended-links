@@ -26,6 +26,9 @@ require_once( plugin_dir_path( __FILE__ ) . '/widgets.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/ajax-functions.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/display-filters.php' );
 
+// register reclinks_votes table so it can be used with $wpdb class
+global $wpdb;
+$wpdb->reclinkvotes = $wpdb->prefix . 'reclinks_votes';
 
 // Register custom post type required for this work
 add_action( 'init', 'register_cpt_reclink' );
@@ -60,7 +63,7 @@ function register_cpt_reclink() {
         'show_in_nav_menus' => false,
         'publicly_queryable' => true,
         'exclude_from_search' => false,
-        'has_archive' => true,
+        'has_archive' => 'reclinks',
         'query_var' => 'link',
         'can_export' => true,
         'rewrite' => array( 
@@ -70,10 +73,14 @@ function register_cpt_reclink() {
 
     register_post_type( 'reclink', $args );
 
-	// register reclinks_votes table so it can be used with $wpdb class
-	global $wpdb;
-	$wpdb->reclinkvotes = $wpdb->prefix . 'reclinks_votes';
 
+	// Mockups of options. TODO: make these actual options.
+	update_option( 'reclinks_plugin_options', array(
+		'vote-values' => array(
+			'minus' => array( 'value' => -1, 'text' => '-' ),
+			'plus' => array( 'value' => 1, 'text' => '+' )
+		)
+	) );
 }
 
 // Activation / deactivation
@@ -177,13 +184,13 @@ function gad_add_reclink_vote( $reclink, $comment = 0, $vote, $user, $userip ) {
 			SELECT * FROM {$wpdb->reclinkvotes}
 			WHERE post_id = $reclink
 			AND comment_id = $comment
-			AND user_id = $user", OBJECT );
+			AND voter_id = $user", OBJECT );
 	} else {
 		$alreadyvoted = $wpdb->get_row( "
 			SELECT * FROM {$wpdb->reclinkvotes}
 			WHERE post_id = $reclink
 			AND comment_id = $comment
-			AND user_ip = $user_ip", OBJECT );
+			AND voter_ip = $user_ip", OBJECT );
 	}
 			
 	if ($alreadyvoted) {
@@ -197,8 +204,8 @@ function gad_add_reclink_vote( $reclink, $comment = 0, $vote, $user, $userip ) {
 			'post_id' 		=> $reclink,
 			'comment_id'	=> $comment,
 			'vote'			=> $vote,
-			'user_id'		=> $user,
-			'user_ip'		=> $userip
+			'voter_id'		=> $user,
+			'voter_ip'		=> $userip
 		) );
 	}
 
@@ -209,12 +216,12 @@ function gad_add_reclink_vote( $reclink, $comment = 0, $vote, $user, $userip ) {
 
 	if ( 0 === $comment) {
 		// vote on post, update post meta value
-		update_post_meta( $reclink, '_vote_score', $new_vote_total );
+		update_post_meta( $reclink, '_vote_score', $new_vote_total+1 );
 	} else {
 		// vote on comment, update comment karma value
 		wp_update_comment( array(
 			'comment_ID' => $comment,
-		   	'comment_karma' => $new_vote_total
+			'comment_karma' => $new_vote_total+1
 		) );	
 	}
 }

@@ -16,10 +16,10 @@ if ( !is_admin() )
  * @uses	gad_add_reclink_vote()
  */
 function reclink_frontend_entries() {
-	if ( !isset( $_POST['reclink_URL'] ) && !isset( $_POST['reclink_promote'] ) )
+	if ( !isset( $_POST['reclink_URL'] ) && !isset( $_GET['action'] ) )
 		return;
 
-	if ( !isset( $_POST['reclink_URL'] ) ) {
+	if ( isset( $_POST['reclink_URL'] ) ) {
 		$reclink = array(
 			'reclink_url' => esc_url( $_POST['reclink_URL'] ),
 			'reclink_title' => sanitize_text_field( $_POST['reclink_title'] ),
@@ -28,10 +28,14 @@ function reclink_frontend_entries() {
 		gad_add_reclink( $reclink );
 	} 
 
-	if ( !isset( $_POST['reclink_promote'] ) ) {		
+	if ( isset( $_GET['action'] ) && 'reclink-vote' == $_GET['action'] ) {		
 		global $current_user;
 		get_currentuserinfo();
-		$votesuccess = reclink_add_vote($_REQUEST['promote-link'],$_REQUEST['rating'],$_REQUEST['comment'],$current_user->ID,$_SERVER['REMOTE_ADDR']);
+
+		$comment = ( isset( $_POST['comment'] ) ) ? intval( $_POST['comment'] ) : 0;
+		$vote = intval( $_POST['vote'] );
+
+		$votesuccess = gad_add_reclink_vote( $_POST['reclink'], 0, $vote, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
 	}
 
 }
