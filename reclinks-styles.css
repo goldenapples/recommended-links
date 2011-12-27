@@ -3,6 +3,7 @@
 
 .votebox {
 	border-bottom: 1px dotted #ccc;
+	padding-bottom: 3px;
 	margin-bottom: 6px;
 }
 

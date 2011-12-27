@@ -19,6 +19,9 @@ jQuery ($) ->
 			data: form.serialize() + '&vote=' + vote
 			complete: (r) ->
 				response = $.parseJSON(r.responseText)
-				form.next('.votescore').text( response.newCount );
+				if ( response.exception )
+					window.location.href = reclinks.loginUrl + '&msg=reclinks-login'
+				else
+					form.next('.votescore').text( response.newCount );
 		return false
 	null

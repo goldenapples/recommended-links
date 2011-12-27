@@ -25,7 +25,11 @@
         complete: function(r) {
           var response;
           response = $.parseJSON(r.responseText);
-          return form.next('.votescore').text(response.newCount);
+          if (response.exception) {
+            return window.location.href = reclinks.loginUrl + '&msg=reclinks-login';
+          } else {
+            return form.next('.votescore').text(response.newCount);
+          }
         }
       });
       return false;

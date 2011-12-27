@@ -28,7 +28,7 @@ function gad_reclinks_show_votelinks( $content ) {
 	if ( $post->post_type !== 'reclink' )
 		return $content;
 
-	$content = reclinks_votebox() . $content;
+	$content = reclinks_votebox( false ) . $content;
 	return $content;
 }
 
@@ -39,9 +39,19 @@ function reclinks_comment_show_votelinks( $comment_text, $comment ) {
 	if ( $post->post_type !== 'reclink' )
 		return $comment_text;
 
-	$comment_text = reclinks_votebox() . $comment_text;
+	$comment_text = reclinks_votebox( false ) . $comment_text;
 	return $comment_text;
 }
+
+/**
+ * @function	reclinks_votebox
+ *
+ * Returns or outputs the div with vote buttons and current points score.
+ * Called by default by the filters above on the_content and comment_text,
+ * but you can remove those filters and include this function in your themes.
+ *
+ * @param	bool	true: echoes votebox, false: returns it as text.
+ */
 
 function reclinks_votebox ( $echo = true ) {
 	global $post, $comment, $current_user, $wpdb;
@@ -50,6 +60,7 @@ function reclinks_votebox ( $echo = true ) {
 		return;
 
 	if ( !isset( $comment ) ) {
+		// votebox on recommended link itself
 		$current_score = get_post_meta( $post->ID, '_vote_score', true );
 		$comments_number = get_comments_number();
 		if ( $comments_number > 0 )
@@ -88,7 +99,7 @@ function reclinks_votebox ( $echo = true ) {
 		$current_vote = $wpdb->get_var( "
 			SELECT vote FROM {$wpdb->reclinkvotes}
 			WHERE post_id = {$post->ID} AND comment_id = $comment_ID
-			AND voter_ip = {$_SERVER['REMOTE_IP_ADDR']}" );
+			AND voter_id = 0 AND voter_ip = '{$_SERVER['REMOTE_ADDR']}'" );
 	}
 
 	$vote_options = "\r\n" . '<form class="reclinks_vote" method="post" action="'.add_query_arg( 'action', 'reclink-vote' ).'" style="display:inline;">';

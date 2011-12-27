@@ -19,8 +19,23 @@ function reclinks_define_capabilities() {
 
 	global $wp_roles;
 
+	if (!isset( $wp_roles ) )
+		$wp_roles = new WP_Roles;
+
 	foreach ( $wp_roles->get_names() as $rolename => $displayname )
 		foreach ( $custom_capabilities as $cap )
 			$wp_roles->add_cap( $rolename, $cap );
 
+}
+
+
+add_filter( 'login_message', 'reclinks_custom_login_message' );
+
+function reclinks_custom_login_message() {
+	if ( !isset( $_GET['msg'] ) )
+		return;
+	if ( 'reclinks-login' === $_GET['msg'] ) {
+		$message = '<p class="message">'.__( 'You must be logged in to vote.', 'gad_reclinks' ) .'</p>';
+		return $message;
+	}
 }

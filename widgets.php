@@ -20,8 +20,8 @@ function gad_reclinks_widgets() {
 		}
 		function widget($args, $instance) {
 		// prints the widget
-//			if ( !current_user_can('add_reclink') )
-//				return;
+			if ( !current_user_can('add_reclink') )
+				return;
 			extract($args, EXTR_SKIP);
 			echo $before_widget;
 			$title = empty($instance['title']) ? ' ' : apply_filters('widget_title', $instance['title']);

@@ -82,8 +82,13 @@ function gad_reclinks_enqueues() {
 	if ( is_admin() )
 		return;
 	wp_enqueue_script( 'reclinks-scripts', plugin_dir_url( __FILE__ ) . 'js/reclinks-scripts.js', array( 'jquery' ), false, true );
-	wp_localize_script( 'reclinks-scripts', 'reclinks', array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ) ) );
-	wp_enqueue_style( 'reclinks', plugin_dir_url( __FILE__ ) . 'gad-link-recommendations.css' );
+	wp_localize_script( 'reclinks-scripts', 'reclinks', 
+		array( 
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ), 
+			'loginUrl' => wp_login_url( ( !empty( $_SERVER['HTTPS'] ) ? 'https://' : 'http://' ) .$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ) 
+		) 
+	);
+	wp_enqueue_style( 'reclinks', plugin_dir_url( __FILE__ ) . 'reclinks-styles.css' );
 }
 
 /**

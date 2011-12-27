@@ -58,16 +58,14 @@ function gad_reclinks_ajax_add() {
 }
 
 add_action( 'wp_ajax_vote_reclink', 'gad_reclinks_ajax_vote' );
+add_action( 'wp_ajax_nopriv_vote_reclink', 'gad_reclinks_ajax_vote' );
 
 function gad_reclinks_ajax_vote() {
-	if ( !current_user_can( 'vote_reclink' ) )
-		die( json_encode( array( 'exception' => 'Current user is not authorized to add links' ) ) );
-
-	if ( !isset( $_POST['vote'] ) )
-		die( print_r( $_REQUEST ) );
-
 	global $current_user;
 	get_currentuserinfo();
+
+	if ( !current_user_can( 'vote_reclink' ) )
+		die( json_encode( array( 'exception' => 'Current user is not authorized to add links' ) ) );
 
 	$comment = ( isset( $_POST['comment'] ) ) ? intval( $_POST['comment'] ) : 0;
 	$vote = intval( $_POST['vote'] );
@@ -78,5 +76,3 @@ function gad_reclinks_ajax_vote() {
 
 }
 
-
-?>
