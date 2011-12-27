@@ -9,15 +9,27 @@ function gad_reclinks_sortby( $query ) {
 	if ( !is_post_type_archive('reclink') )
 		return $query;
 
-	if ( isset( $_GET['newest'] ) )
-		return $query;
+	$sortby = 'current'; // default sort
 
-	// default: order by vote total
-	$query->set( 'meta_key', '_vote_score' );
-	$query->set( 'orderby', 'meta_value_num' );
-	$query->set( 'order', 'DESC' );
+	if ( isset( $_GET['sort'] ) && in_array(
+			$_GET['sort'], 
+			array( 'newest', 'hot', 'current', 'score' ) ) )
+		$sortby = $_GET['sort'];
 
-//	var_dump( $query ); die();
+	switch ( $sortby ) :
+		case 'score':
+			// default: order by vote total
+			$query->set( 'meta_key', '_vote_score' );
+			$query->set( 'orderby', 'meta_value_num' );
+			$query->set( 'order', 'DESC' );
+			break;
+		case 'current':
+		case 'hot':
+		case 'newest':
+			break;
+	endswitch;
+
+	return $query;
 
 }
 
@@ -103,23 +115,21 @@ function reclinks_votebox ( $echo = true ) {
 	}
 
 	$vote_options = "\r\n" . '<form class="reclinks_vote" method="post" action="'.add_query_arg( 'action', 'reclink-vote' ).'" style="display:inline;">';
-	$vote_options .= "\r\n\t" . '<input type="hidden" name="reclink" value="'.$post->ID.'" >';
+	$vote_options .= '<input type="hidden" name="reclink" value="'.$post->ID.'" >';
 
 	if ( isset( $comment ) )
-		$vote_options .= "\r\n\t" . '<input type="hidden" name="comment" value="'.$comment->comment_ID.'">';
+		$vote_options .= '<input type="hidden" name="comment" value="'.$comment->comment_ID.'">';
 
 	foreach( $reclinks_options['vote-values'] as $vote => $values ) {
 		$class = ( $current_vote === $values['value'] ) ? 'current_vote' : '';
-		$vote_options .= "\r\n\t" . '<button class="votelink '.$class.'" name="vote" value="'.$values['value'].'" data-vote="'.$values['value'].'">';
+		$vote_options .= '<button class="votelink '.$class.'" name="vote" value="'.$values['value'].'" data-vote="'.$values['value'].'">';
 		$vote_options .= $values['text'] . '</button>';
 	}
 
-	$vote_options .= "\r\n".'</form>';
+	$vote_options .= '</form>';
 
 	$votebox = <<<VOTEBOX
-<div class="votebox">
-	$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time - $comments_link_text
-</div>
+<div class="votebox">$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time - $comments_link_text</div>
 VOTEBOX;
 
 	if ( $echo === true )
@@ -135,5 +145,15 @@ function gad_reclinks_permalink( $permalink ) {
 	if ( $post->post_type === 'reclink' && $href = get_post_meta( $post->ID, '_href', true ) )
 		return $href;
 	return $permalink;
+}
+
+function reclink_domain( $echo = true ) {
+	global $post;
+	if ( $href = get_post_meta( $post->ID, '_href', true ) )
+		$host = parse_url( $href, PHP_URL_HOST );
+	if ( $echo )
+		echo $host;
+	else 
+		return $host;
 }
 
