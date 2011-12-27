@@ -73,7 +73,8 @@ function gad_reclinks_ajax_vote() {
 	$vote = intval( $_POST['vote'] );
 
 	$votesuccess = gad_add_reclink_vote( $_POST['reclink'], $comment, $vote, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
-	die();
+
+	die( json_encode( array( 'newCount' => $votesuccess ) ) );
 
 }
 

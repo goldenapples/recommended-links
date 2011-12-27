@@ -22,10 +22,10 @@
         type: 'post',
         url: reclinks.ajaxUrl + '?action=vote_reclink',
         data: form.serialize() + '&vote=' + vote,
-        complete: function() {
-          return form.next('.votescore').text(function(ind, val) {
-            return parseInt(val) + vote;
-          });
+        complete: function(r) {
+          var response;
+          response = $.parseJSON(r.responseText);
+          return form.next('.votescore').text(response.newCount);
         }
       });
       return false;

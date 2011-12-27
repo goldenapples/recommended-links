@@ -17,7 +17,8 @@ jQuery ($) ->
 			type: 'post'
 			url: reclinks.ajaxUrl + '?action=vote_reclink'
 			data: form.serialize() + '&vote=' + vote
-			complete: () ->
-				form.next('.votescore').text( (ind,val) -> parseInt(val)+vote );
+			complete: (r) ->
+				response = $.parseJSON(r.responseText)
+				form.next('.votescore').text( response.newCount );
 		return false
 	null

@@ -1,82 +1,11 @@
 @charset "utf-8";
 /* CSS Document */
 
-ul.reclinkslist {
-	padding-bottom: 6px;
-	position: relative;
+.votebox {
+	border-bottom: 1px dotted #ccc;
+	margin-bottom: 6px;
 }
 
-ul.reclinkslist li.reclink {
-	position: relative;
-	clear: both;
-	padding: 6px !important;
-	margin-top: 2px;
-	border-top: 1px dotted;
+.votelink.current_vote {
+	background: #cff;
 }
-
-ul.reclinkslist li.reclink span.votestotal {
-	display: block;
-	float: left;
-	background: #FCF799;
-	padding: 3px;
-	margin-right: 9px;
-}
-
-ul.reclinkslist li.reclink .reclink_linktitle p{
-	font-family: Georgia, "Times New Roman", Times, serif !important;
-	font-weight: bold;
-	color: #330e02;
-	font-size: 1.3em;
-	line-height: 1.15;
-	margin: 0;
-}
-
-ul.reclinkslist li.reclink .reclink_linkhref {
-	margin:0;
-	display: block;
-	color: #999;
-}
-
-
-
-ul.reclinkslist li a {
-	display: inline !important;
-	width: auto !important;
-	padding: 0 !important;
-}
-
-ul.reclinkslist li a:hover {
-	text-decoration: underline;
-}
-
-ul.reclinkslist li.reclink .reclink_linkdescription p {
-	margin: 3px 12px 6px 12px;
-}
-
-#reclink_addform {
-	background: #FCF799;
-	margin: 12px;
-	padding: 6px;
-	clear: left;
-}
-
-#reclink_addform label {
-	width: 25%;
-	margin-right: 6px;
-	text-align: right;
-	float: left;
-}
-
-#reclink_addform input, #reclink_addform textarea {
-	width: 70%;
-}
-
-#LoginWithAjax_Form { margin: 6px 12px; }
-
-#contentcolumn ul.reclinkslist {
-	list-style: none;
-	font-size: 11px;
-	line-height: 1.25;
-	padding: 0;
-}
-

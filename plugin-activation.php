@@ -40,22 +40,13 @@ function reclinks_install() {
 	}
 
 	if (!get_option('reclinks_plugin_options')) {
+	// Mockups of options. TODO: make these actual user-editable settings.
 		$reclinks_plugin_defaults = array(
-					'theme'=>'roadsigns',
-					'display'=>'stars',
-					'stars-1-value'=>-1,
-					'stars-1-text'=>'Off topic or irrelevant',
-					'stars-2-value'=>0,
-					'stars-2-text'=>'Wasn\'t all that impressed',
-					'stars-3-value'=>1,
-					'stars-3-text'=>'Liked it',
-					'stars-4-value'=>2,
-					'stars-4-text'=>'Very interesting',
-					'stars-5-value'=>3,
-					'stars-5-text'=>'A+++++',
-					'commenting-enabled'=>true,
-					'tagging-enabled'=>true);
-		
+			'vote-values' => array(
+				'minus' => array( 'value' => -1, 'text' => '-' ),
+				'plus' => array( 'value' => 1, 'text' => '+' )
+			)
+		);
 		update_option('reclinks_plugin_options',$reclinks_plugin_defaults);
 	}
 }
@@ -68,7 +59,6 @@ function reclinks_install() {
  *
  */
 function reclinks_import_old_links() {
-	error_log( 'Importing old posts...' );
 	ignore_user_abort(true);
 	set_time_limit(0);
 

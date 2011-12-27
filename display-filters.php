@@ -44,7 +44,8 @@ function reclinks_comment_show_votelinks( $comment_text, $comment ) {
 }
 
 function reclinks_votebox ( $echo = true ) {
-	global $post, $comment;
+	global $post, $comment, $current_user, $wpdb;
+
 	if ( $post->post_type !== 'reclink' )
 		return;
 
@@ -62,6 +63,7 @@ function reclinks_votebox ( $echo = true ) {
 			: "Anonymous";
 		$submit_time = '<a href="'.get_permalink( $post->ID ).'">'.human_time_diff( mysql2date( 'U', $post->post_date ) ) . ' ago</a>';
 
+		$comment_ID = 0;
 
 	} else {
 		// fields relevant to comments
@@ -69,9 +71,25 @@ function reclinks_votebox ( $echo = true ) {
 		$comments_link_text = '';
 		$author_link = get_comment_author_link();
 		$submit_time = '<a href="'.get_comment_link( $comment ).'">'.human_time_diff( mysql2date( 'U', $comment->comment_date ) ) . ' ago</a>';
+
+		$comment_ID = $comment->comment_ID;
 	}
 
 	$reclinks_options = get_option( 'reclinks_plugin_options' );
+
+	get_currentuserinfo();
+
+	if ( is_user_logged_in() ) {
+		$current_vote = $wpdb->get_var( "
+			SELECT vote FROM {$wpdb->reclinkvotes}
+			WHERE post_id = {$post->ID} AND comment_id = $comment_ID
+			AND voter_id = {$current_user->ID}" );
+	} else {
+		$current_vote = $wpdb->get_var( "
+			SELECT vote FROM {$wpdb->reclinkvotes}
+			WHERE post_id = {$post->ID} AND comment_id = $comment_ID
+			AND voter_ip = {$_SERVER['REMOTE_IP_ADDR']}" );
+	}
 
 	$vote_options = "\r\n" . '<form class="reclinks_vote" method="post" action="'.add_query_arg( 'action', 'reclink-vote' ).'" style="display:inline;">';
 	$vote_options .= "\r\n\t" . '<input type="hidden" name="reclink" value="'.$post->ID.'" >';
@@ -80,7 +98,8 @@ function reclinks_votebox ( $echo = true ) {
 		$vote_options .= "\r\n\t" . '<input type="hidden" name="comment" value="'.$comment->comment_ID.'">';
 
 	foreach( $reclinks_options['vote-values'] as $vote => $values ) {
-		$vote_options .= "\r\n\t" . '<button class="votelink" name="vote" value="'.$values['value'].'" data-vote="'.$values['value'].'">';
+		$class = ( $current_vote === $values['value'] ) ? 'current_vote' : '';
+		$vote_options .= "\r\n\t" . '<button class="votelink '.$class.'" name="vote" value="'.$values['value'].'" data-vote="'.$values['value'].'">';
 		$vote_options .= $values['text'] . '</button>';
 	}
 
