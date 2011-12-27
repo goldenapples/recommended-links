@@ -32,28 +32,52 @@ function gad_reclinks_show_votelinks( $content ) {
 	return $content;
 }
 
-function reclinks_votebox ( $echo = true ) {
+add_filter( 'comment_text', 'reclinks_comment_show_votelinks' );
+
+function reclinks_comment_show_votelinks( $comment_text, $comment ) {
 	global $post;
+	if ( $post->post_type !== 'reclink' )
+		return $comment_text;
+
+	$comment_text = reclinks_votebox() . $comment_text;
+	return $comment_text;
+}
+
+function reclinks_votebox ( $echo = true ) {
+	global $post, $comment;
 	if ( $post->post_type !== 'reclink' )
 		return;
 
-	$current_score = get_post_meta( $post->ID, '_vote_score', true );
-	$comments_number = get_comments_number();
-	if ( $comments_number > 0 )
-		$comments_text = _n( 'One comment', "%s comments", get_comments_number(), 'gad_reclinks' );
-	else 
-		$comments_text = __( 'No comments yet', 'gad_reclinks' );
+	if ( !isset( $comment ) ) {
+		$current_score = get_post_meta( $post->ID, '_vote_score', true );
+		$comments_number = get_comments_number();
+		if ( $comments_number > 0 )
+			$comments_text = _n( 'One comment', "%s comments", get_comments_number(), 'gad_reclinks' );
+		else 
+			$comments_text = __( 'No comments yet', 'gad_reclinks' );
+		
+		$comments_link_text = '<a href="' . get_comments_link() . '" title="' . the_title_attribute( 'echo=0' ) . '">' . $comments_text . '</a>';
+		$author_link = ( get_the_author() ) 
+			?  '<a href="' . get_author_posts_url( $post->post_author ) . '">' . get_the_author() . '</a>' 
+			: "Anonymous";
+		$submit_time = '<a href="'.get_permalink( $post->ID ).'">'.human_time_diff( mysql2date( 'U', $post->post_date ) ) . ' ago</a>';
 
-	$comments_link_text = '<a href="' . get_comments_link() . '" title="' . the_title_attribute( 'echo=0' ) . '">' . $comments_text . '</a>';
-	$link_submitter = ( get_the_author() ) 
-		?  '<a href="' . get_author_posts_url( $post->post_author ) . '">' . get_the_author() . '</a>' 
-		: "Anonymous";
-	$link_submit_time = '<a href="'.get_permalink( $post->ID ).'">'.human_time_diff( mysql2date( 'U', $post->post_date ) ) . ' ago</a>';
+
+	} else {
+		// fields relevant to comments
+		$current_score = $comment->comment_karma;
+		$comments_link_text = '';
+		$author_link = get_comment_author_link();
+		$submit_time = '<a href="'.get_comment_link( $comment ).'">'.human_time_diff( mysql2date( 'U', $comment->comment_date ) ) . ' ago</a>';
+	}
 
 	$reclinks_options = get_option( 'reclinks_plugin_options' );
 
-	$vote_options = "\r\n" . '<form method="post" action="'.add_query_arg( 'action', 'reclink-vote' ).'" style="display:inline;">';
+	$vote_options = "\r\n" . '<form class="reclinks_vote" method="post" action="'.add_query_arg( 'action', 'reclink-vote' ).'" style="display:inline;">';
 	$vote_options .= "\r\n\t" . '<input type="hidden" name="reclink" value="'.$post->ID.'" >';
+
+	if ( isset( $comment ) )
+		$vote_options .= "\r\n\t" . '<input type="hidden" name="comment" value="'.$comment->comment_ID.'">';
 
 	foreach( $reclinks_options['vote-values'] as $vote => $values ) {
 		$vote_options .= "\r\n\t" . '<button class="votelink" name="vote" value="'.$values['value'].'" data-vote="'.$values['value'].'">';
@@ -64,7 +88,7 @@ function reclinks_votebox ( $echo = true ) {
 
 	$votebox = <<<VOTEBOX
 <div class="votebox">
-	$vote_options | $current_score points by $link_submitter $link_submit_time - $comments_link_text
+	$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time - $comments_link_text
 </div>
 VOTEBOX;
 

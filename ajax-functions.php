@@ -16,10 +16,10 @@ if ( !is_admin() )
  * @uses	gad_add_reclink_vote()
  */
 function reclink_frontend_entries() {
-	if ( !isset( $_POST['reclink_URL'] ) && !isset( $_GET['action'] ) )
+	if ( !isset( $_GET['action'] ) )
 		return;
 
-	if ( isset( $_POST['reclink_URL'] ) ) {
+	if ( 'reclink-add' === $_GET['action'] ) {
 		$reclink = array(
 			'reclink_url' => esc_url( $_POST['reclink_URL'] ),
 			'reclink_title' => sanitize_text_field( $_POST['reclink_title'] ),
@@ -28,14 +28,14 @@ function reclink_frontend_entries() {
 		gad_add_reclink( $reclink );
 	} 
 
-	if ( isset( $_GET['action'] ) && 'reclink-vote' == $_GET['action'] ) {		
+	if ( 'reclink-vote' === $_GET['action'] ) {		
 		global $current_user;
 		get_currentuserinfo();
 
 		$comment = ( isset( $_POST['comment'] ) ) ? intval( $_POST['comment'] ) : 0;
 		$vote = intval( $_POST['vote'] );
 
-		$votesuccess = gad_add_reclink_vote( $_POST['reclink'], 0, $vote, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
+		$votesuccess = gad_add_reclink_vote( $_POST['reclink'], $comment, $vote, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
 	}
 
 }
@@ -53,6 +53,26 @@ function gad_reclinks_ajax_add() {
 	);
 	$link = gad_add_reclink( $reclink );
 	echo json_encode( get_post( $link ) );
+	die();
+
+}
+
+add_action( 'wp_ajax_vote_reclink', 'gad_reclinks_ajax_vote' );
+
+function gad_reclinks_ajax_vote() {
+	if ( !current_user_can( 'vote_reclink' ) )
+		die( json_encode( array( 'exception' => 'Current user is not authorized to add links' ) ) );
+
+	if ( !isset( $_POST['vote'] ) )
+		die( print_r( $_REQUEST ) );
+
+	global $current_user;
+	get_currentuserinfo();
+
+	$comment = ( isset( $_POST['comment'] ) ) ? intval( $_POST['comment'] ) : 0;
+	$vote = intval( $_POST['vote'] );
+
+	$votesuccess = gad_add_reclink_vote( $_POST['reclink'], $comment, $vote, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
 	die();
 
 }

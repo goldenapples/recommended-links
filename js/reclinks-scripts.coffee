@@ -9,4 +9,15 @@ jQuery ($) ->
 			complete: () ->
 				alert 'Link Submitted!'
 		return false
-
+	$('form.reclinks_vote button').bind 'click', (event) ->
+		event.preventDefault
+		form = $(this).parent('form')
+		vote = $(this).data('vote')
+		$.ajax
+			type: 'post'
+			url: reclinks.ajaxUrl + '?action=vote_reclink'
+			data: form.serialize() + '&vote=' + vote
+			complete: () ->
+				form.next('.votescore').text( (ind,val) -> parseInt(val)+vote );
+		return false
+	null

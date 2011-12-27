@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    return $('form.reclinks_addlink').bind('submit', function(event) {
+    $('form.reclinks_addlink').bind('submit', function(event) {
       event.preventDefault;
       alert('submitting');
       $.ajax({
@@ -13,5 +13,23 @@
       });
       return false;
     });
+    $('form.reclinks_vote button').bind('click', function(event) {
+      var form, vote;
+      event.preventDefault;
+      form = $(this).parent('form');
+      vote = $(this).data('vote');
+      $.ajax({
+        type: 'post',
+        url: reclinks.ajaxUrl + '?action=vote_reclink',
+        data: form.serialize() + '&vote=' + vote,
+        complete: function() {
+          return form.next('.votescore').text(function(ind, val) {
+            return parseInt(val) + vote;
+          });
+        }
+      });
+      return false;
+    });
+    return null;
   });
 }).call(this);
