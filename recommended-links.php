@@ -13,6 +13,12 @@ $reclinks_theme_options = get_option('reclinks_plugin_options');
 
 global $wpdb;
 
+// This is a hack to get around symlink resolving issues, see 
+// http://wordpress.stackexchange.com/questions/15202/plugins-in-symlinked-directories
+// Hopefully a better solution will be found in future versions of WordPress.
+if ( isset( $plugin ) )
+	define( 'RECLINKS_DIRECTORY', plugin_dir_url( $plugin ) );
+else define( 'RECLINKS_DIRECTORY', RECLINKS_DIRECTORY );
 
 // Required files
 require_once( plugin_dir_path( __FILE__ ) . '/user-functions.php' );
@@ -81,14 +87,14 @@ add_action( 'wp_enqueue_scripts', 'gad_reclinks_enqueues' );
 function gad_reclinks_enqueues() {
 	if ( is_admin() )
 		return;
-	wp_enqueue_script( 'reclinks-scripts', plugin_dir_url( __FILE__ ) . 'js/reclinks-scripts.js', array( 'jquery' ), false, true );
+	wp_enqueue_script( 'reclinks-scripts', RECLINKS_DIRECTORY . 'js/reclinks-scripts.js', array( 'jquery' ), false, true );
 	wp_localize_script( 'reclinks-scripts', 'reclinks', 
 		array( 
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ), 
 			'loginUrl' => wp_login_url( ( !empty( $_SERVER['HTTPS'] ) ? 'https://' : 'http://' ) .$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ) 
 		) 
 	);
-	wp_enqueue_style( 'reclinks', plugin_dir_url( __FILE__ ) . 'reclinks-styles.css' );
+	wp_enqueue_style( 'reclinks', RECLINKS_DIRECTORY . 'reclinks-styles.css' );
 }
 
 /**

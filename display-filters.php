@@ -9,6 +9,8 @@ function gad_reclinks_sortby( $query ) {
 	if ( !is_post_type_archive('reclink') )
 		return $query;
 
+	$query->set( 'posts_per_page', 25 );
+
 	$sortby = 'current'; // default sort
 
 	if ( isset( $_GET['sort'] ) && in_array(
@@ -24,13 +26,55 @@ function gad_reclinks_sortby( $query ) {
 			$query->set( 'order', 'DESC' );
 			break;
 		case 'current':
+			add_filter( 'posts_fields', 'gad_reclinks_posts_fields' );
+			add_filter( 'posts_join', 'gad_reclinks_votes_join_current' );
+			add_filter( 'posts_groupby', 'gad_reclinks_groupby' );
+			add_filter( 'posts_orderby', 'gad_reclinks_orderby' );
+			break;
 		case 'hot':
+			add_filter( 'posts_fields', 'gad_reclinks_posts_fields' );
+			add_filter( 'posts_join', 'gad_reclinks_votes_join_hot' );
+			add_filter( 'posts_groupby', 'gad_reclinks_groupby' );
+			add_filter( 'posts_orderby', 'gad_reclinks_orderby' );
+			break;
 		case 'newest':
 			break;
 	endswitch;
 
 	return $query;
 
+}
+
+function gad_reclinks_posts_fields( $fields ) {
+	global $wpdb;
+	$fields = str_replace( "{$wpdb->posts}.*", "{$wpdb->posts}.*, SUM( {$wpdb->reclinkvotes}.vote ) AS post_vote ", $fields );
+	return $fields;
+}
+
+function gad_reclinks_votes_join_hot() {
+	return gad_reclinks_votes_join( '1 DAY' );
+}
+
+function gad_reclinks_votes_join_current() {
+	return gad_reclinks_votes_join( '1 WEEK' );
+}
+
+function gad_reclinks_votes_join( $interval ) {
+	global $wpdb;
+	$join_sql = "LEFT JOIN {$wpdb->reclinkvotes} ON ( {$wpdb->reclinkvotes}.post_id = {$wpdb->posts}.ID AND DATE_ADD( {$wpdb->reclinkvotes}.vote_time, INTERVAL $interval ) > NOW() )";
+	return $join_sql;
+}
+
+function gad_reclinks_groupby( $groupby ) {
+	global $wpdb;
+	$groupby = "{$wpdb->posts}.ID";
+	return $groupby;
+}
+
+function gad_reclinks_orderby( $orderby ) {
+	global $wpdb;
+	$orderby = "post_vote DESC, {$wpdb->posts}.post_date DESC";
+	return $orderby;
 }
 
 add_filter( 'the_content', 'gad_reclinks_show_votelinks' );

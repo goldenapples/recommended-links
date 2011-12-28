@@ -1,22 +1,20 @@
-Recommended Links for WordPress / BuddyPress
+=== Recommended Links for WordPress ===
 Contributors: goldenapples
 Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for-wordpress/
-Tags: user-
-Requires at least: 2.0.2
+Tags: social bookmarking, sharing, voting, reddit, digg
+Requires at least: 3.2.1
 Tested up to: 3.3
 Stable tag: 0.2
 
-A sort of “Reddit clone” that allows users to post links, up- or down-vote them, and comment on them.
+A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
 == Description ==
 
-This is the beginnings of a much more ambitious project. At the moment, there is no admin options screen and functionality is a bit limited. However, if you want to try this out, please give me feedback. I will guarantee backwards compatibility with all data saved by the plugin, so it should be safe to install and activate, and 
+This is the beginnings of a much more ambitious project. At the moment, there is no admin options screen and functionality is a bit limited. However, if you want to try this out, please give me feedback. 
+
+I will guarantee backwards compatibility with all data saved by the plugin, so it should be safe to install and activate, and as I add features, your existing posts and links will work with them just fine.
 
 == Installation ==
-
-This section describes how to install the plugin and get it working.
-
-e.g.
 
 1. Upload the entire `recommended-links/` folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
