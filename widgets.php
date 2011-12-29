@@ -107,6 +107,25 @@ function gad_reclinks_widgets() {
 				endwhile;
 
 				echo '</ul>';
+			endif;
+
+			if ( $instance['links'] !== 'none' ):
+
+				$l = get_post_type_archive_link( 'reclink' );
+
+				switch ( $instance['links'] ) :
+					case 'linkonly':
+						echo '<p><a href="'.$l.'">'.__( 'View current links', 'gad_reclinks' ).'</a></p>';
+						break;
+					default:
+						echo '<ul>';
+						echo '<li><a href="' . add_query_arg( 'sort', 'newest', $l ) . '">' . __( 'Newest', 'gad_reclinks' ) . '</a></li>';
+						echo '<li><a href="' . add_query_arg( 'sort', 'hot', $l ) . '">' . __( 'Hot', 'gad_reclinks' ) . '</a></li>';
+						echo '<li><a href="' . add_query_arg( 'sort', 'current', $l ) . '">' . __( 'Current', 'gad_reclinks' ) . '</a></li>';
+						echo '<li><a href="' . add_query_arg( 'sort', 'score', $l ) . '">' . __( 'Top ranked', 'gad_reclinks' ) . '</a></li>';
+						echo '</ul>';
+						break;
+				endswitch;
 
 			endif;
 

@@ -4,7 +4,7 @@ Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
 Tested up to: 3.3
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
@@ -24,7 +24,7 @@ I will guarantee backwards compatibility with all data saved by the plugin, so i
 
 == Frequently Asked Questions ==
 
-= What sorting options are there =
+= What sorting options are there? =
 
 Currently this plugin supports sorting of archive pages by a "sort" parameter passed via query string. The options allowed are:
 
@@ -71,6 +71,9 @@ That's all there is to it!
 
 == Changelog ==
 
+= 0.2.2 =
+Added a widget to display the most recently posted links in the sidebar. Also, fixed some minor javascript and css errors.
+
 = 0.2.1 =
 Implemented four new sorting options to the recommended links archive page: "newest", "hot", "current", and "score". Also fixed minor bug in resolving symlinked plugin directory
 
@@ -82,6 +85,9 @@ I built a version 0.1 back in 2010 for a personal project, which was only half c
 
 
 == Upgrade Notice ==
+
+= 0.2.2 =
+Added a widget to display the most recently posted links in the sidebar. Also, fixed some minor javascript and css errors.
 
 = 0.2.1 =
 Implemented four new sorting options to the recommended links archive page: "newest", "hot", "current", and "score".

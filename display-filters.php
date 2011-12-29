@@ -6,7 +6,9 @@ add_filter( 'pre_get_posts', 'gad_reclinks_sortby' );
 
 function gad_reclinks_sortby( $query ) {
 
-	if ( !is_post_type_archive('reclink') )
+	global $wp_the_query;
+
+	if ( !is_post_type_archive('reclink') || ( $query !== $wp_the_query ) )
 		return $query;
 
 	$query->set( 'posts_per_page', 25 );
