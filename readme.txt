@@ -4,7 +4,7 @@ Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
 Tested up to: 3.3
-Stable tag: 0.2
+Stable tag: 0.2.1
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
@@ -24,6 +24,19 @@ I will guarantee backwards compatibility with all data saved by the plugin, so i
 
 == Frequently Asked Questions ==
 
+= What sorting options are there =
+
+Currently this plugin supports sorting of archive pages by a "sort" parameter passed via query string. The options allowed are:
+
+* **newest** Sort links by posted time, most recently first
+* **hot** Sort links by votes over the past day
+* **current** Sort by votes over the past week
+* **score** Sort by total vote score over time
+
+So for example, the URL `yoursite.tld/reclinks/?sort=hot` would display a page of the 25 links with the highest vote score over the past day.
+
+At this point, implementing these sorting options is fully up to you - a user cookie would make sense here, or a drop down at the top of the archive page would work. I will provide a template tag and a widget to change sorting once I flesh out these options some more.
+
 = What markup does the plugin offer? =
 
 This plugin filters `the_permalink` to display the link submitted. A typical archive page, where the post title is wrapped in markup like
@@ -34,9 +47,10 @@ If you want to access the permalink of the comments page on your site, use `get_
 
 By default, this plugin filters both `the_content` and `comment_text` to add vote buttons and current score box above the post/comment content. If you want to display these in a different position, you can unhook those filters and use the template tag `reclinks_votebox()` in your template files wherever you want the vote box to display.
 
-There are not many special display features yet. 
+There are not many special display features yet. A partial listing:
 
-`reclink_domain()` echoes the host of the link submitted - give people a chance to know what they're getting themselves into before they follow a link. 
+* `reclink_domain()` echoes the host of the link submitted - give people a chance to know what they're getting themselves into before they follow a link. 
+* `reclink_votebox()` echoes a div with +/- vote buttons, the current score, author, and human time diff'd post date
 
 = Sample markup =
 
@@ -57,9 +71,17 @@ That's all there is to it!
 
 == Changelog ==
 
+= 0.2.1 =
+Implemented four new sorting options to the recommended links archive page: "newest", "hot", "current", and "score". Also fixed minor bug in resolving symlinked plugin directory
+
 = 0.2 = 
 This is the first initial public release. This uses a custom post type, rather than trying to do everything through custom tables and functions. 
 
 = 0.1 =
 I built a version 0.1 back in 2010 for a personal project, which was only half complete (most of the functions necessary to run the plugin were mixed in with theme files, and functionality was very limited.)
 
+
+== Upgrade Notice ==
+
+= 0.2.1 =
+Implemented four new sorting options to the recommended links archive page: "newest", "hot", "current", and "score".
