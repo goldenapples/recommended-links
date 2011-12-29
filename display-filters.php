@@ -90,7 +90,7 @@ function gad_reclinks_show_votelinks( $content ) {
 
 add_filter( 'comment_text', 'reclinks_comment_show_votelinks' );
 
-function reclinks_comment_show_votelinks( $comment_text, $comment ) {
+function reclinks_comment_show_votelinks( $comment_text, $comment = null ) {
 	global $post;
 	if ( $post->post_type !== 'reclink' )
 		return $comment_text;
@@ -170,10 +170,9 @@ function reclinks_votebox ( $echo = true ) {
 		$vote_options .= $values['text'] . '</button>';
 	}
 
-	$vote_options .= '</form>';
 
 	$votebox = <<<VOTEBOX
-<div class="votebox">$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time - $comments_link_text</div>
+<div class="votebox">$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time - $comments_link_text</form></div>
 VOTEBOX;
 
 	if ( $echo === true )
@@ -191,7 +190,10 @@ function gad_reclinks_permalink( $permalink ) {
 	return $permalink;
 }
 
-function reclink_domain( $echo = true ) {
+// the price you pay for typos in documentation
+function reclink_domain( $echo = true ) { return reclinks_domain( $echo ); }
+
+function reclinks_domain( $echo = true ) {
 	global $post;
 	if ( $href = get_post_meta( $post->ID, '_href', true ) )
 		$host = parse_url( $href, PHP_URL_HOST );

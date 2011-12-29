@@ -22,6 +22,6 @@ jQuery ($) ->
 				if ( response.exception )
 					window.location.href = reclinks.loginUrl + '&msg=reclinks-login'
 				else
-					form.next('.votescore').text( response.newCount );
+					form.find('.votescore').text( response.newCount );
 		return false
 	null
