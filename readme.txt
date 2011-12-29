@@ -4,7 +4,7 @@ Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
 Tested up to: 3.3
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 

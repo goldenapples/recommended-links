@@ -4,14 +4,16 @@ Plugin Name: Recommended Links
 Plugin URI: http://goldenapplesdesign.com/projects/recommended-links-plugin/
 Description: A "reddit clone" that runs in Wordpress.
 Author: Nathaniel Taintor
-Version: 0.2.2
+Version: 0.2.3
 Author URI: http://goldenapplesdesign.com
 */
 
 // Variable definitions first
 $reclinks_theme_options = get_option('reclinks_plugin_options');
 
+// Register reclinks_votes table so it can be used with $wpdb class
 global $wpdb;
+$wpdb->reclinkvotes = $wpdb->prefix . 'reclinks_votes';
 
 // This is a hack to get around symlink resolving issues, see 
 // http://wordpress.stackexchange.com/questions/15202/plugins-in-symlinked-directories
@@ -25,10 +27,6 @@ require_once( plugin_dir_path( __FILE__ ) . '/user-functions.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/widgets.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/ajax-functions.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/display-filters.php' );
-
-// Register reclinks_votes table so it can be used with $wpdb class
-global $wpdb;
-$wpdb->reclinkvotes = $wpdb->prefix . 'reclinks_votes';
 
 // Register custom post type required for this work
 add_action( 'init', 'register_cpt_reclink' );

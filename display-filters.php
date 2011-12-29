@@ -32,12 +32,14 @@ function gad_reclinks_sortby( $query ) {
 			add_filter( 'posts_join', 'gad_reclinks_votes_join_current' );
 			add_filter( 'posts_groupby', 'gad_reclinks_groupby' );
 			add_filter( 'posts_orderby', 'gad_reclinks_orderby' );
+			add_action( 'the_posts', 'gad_remove_custom_filters' );
 			break;
 		case 'hot':
 			add_filter( 'posts_fields', 'gad_reclinks_posts_fields' );
 			add_filter( 'posts_join', 'gad_reclinks_votes_join_hot' );
 			add_filter( 'posts_groupby', 'gad_reclinks_groupby' );
 			add_filter( 'posts_orderby', 'gad_reclinks_orderby' );
+			add_action( 'the_posts', 'gad_remove_custom_filters' );
 			break;
 		case 'newest':
 			break;
@@ -46,6 +48,16 @@ function gad_reclinks_sortby( $query ) {
 	return $query;
 
 }
+
+function gad_remove_custom_filters( $posts ) {
+	remove_filter( 'posts_fields', 'gad_reclinks_posts_fields' );
+	remove_filter( 'posts_join', 'gad_reclinks_votes_join_hot' );
+	remove_filter( 'posts_join', 'gad_reclinks_votes_join_current' );
+	remove_filter( 'posts_groupby', 'gad_reclinks_groupby' );
+	remove_filter( 'posts_orderby', 'gad_reclinks_orderby' );
+	return $posts;
+}
+
 
 function gad_reclinks_posts_fields( $fields ) {
 	global $wpdb;
@@ -122,11 +134,11 @@ function reclinks_votebox ( $echo = true ) {
 		$current_score = get_post_meta( $post->ID, '_vote_score', true );
 		$comments_number = get_comments_number();
 		if ( $comments_number > 0 )
-			$comments_text = _n( 'One comment', "%s comments", get_comments_number(), 'gad_reclinks' );
+			$comments_text = _n( 'One comment', sprintf( '%s comments', get_comments_number() ) ,get_comments_number(), 'gad_reclinks' );
 		else 
 			$comments_text = __( 'No comments yet', 'gad_reclinks' );
 		
-		$comments_link_text = '<a href="' . get_comments_link() . '" title="' . the_title_attribute( 'echo=0' ) . '">' . $comments_text . '</a>';
+		$comments_link_text = '- <a href="' . get_comments_link() . '" title="' . the_title_attribute( 'echo=0' ) . '">' . $comments_text . '</a>';
 		$author_link = ( get_the_author() ) 
 			?  '<a href="' . get_author_posts_url( $post->post_author ) . '">' . get_the_author() . '</a>' 
 			: "Anonymous";
@@ -174,7 +186,7 @@ function reclinks_votebox ( $echo = true ) {
 
 
 	$votebox = <<<VOTEBOX
-<div class="votebox">$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time - $comments_link_text</form></div>
+<div class="votebox">$vote_options | <span class="votescore">$current_score</span> points by $author_link $submit_time $comments_link_text</form></div>
 VOTEBOX;
 
 	if ( $echo === true )
