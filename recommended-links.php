@@ -20,7 +20,7 @@ $wpdb->reclinkvotes = $wpdb->prefix . 'reclinks_votes';
 // Hopefully a better solution will be found in future versions of WordPress.
 if ( isset( $plugin ) )
 	define( 'RECLINKS_DIRECTORY', plugin_dir_url( $plugin ) );
-else define( 'RECLINKS_DIRECTORY', RECLINKS_DIRECTORY );
+else define( 'RECLINKS_DIRECTORY', plugin_dir_url( __FILE__ ) );
 
 // Required files
 require_once( plugin_dir_path( __FILE__ ) . '/user-functions.php' );
@@ -197,6 +197,8 @@ function gad_add_reclink_vote( $reclink, $comment = 0, $vote, $user, $userip ) {
 			'comment_karma' => $new_vote_total+1
 		) );	
 	}
+
+	do_action( 'reclink_add_vote', $reclink, $comment, $vote );
 
 	return $new_vote_total + 1;
 }
