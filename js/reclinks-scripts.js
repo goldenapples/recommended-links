@@ -3,9 +3,8 @@
     $('form.reclinks_addlink').bind('submit', function(event) {
       event.preventDefault;
       alert('submitting');
-      $.ajax({
+      $.ajax(reclinks.ajaxUrl + '?action=add_reclink', {
         type: 'post',
-        url: reclinks.ajaxUrl + '?action=add_reclink',
         data: $(this).serialize(),
         complete: function() {
           return alert('Link Submitted!');
@@ -18,9 +17,8 @@
       event.preventDefault;
       form = $(this).parent('form');
       vote = $(this).data('vote');
-      $.ajax({
+      $.ajax(reclinks.ajaxUrl + '?action=vote_reclink', {
         type: 'post',
-        url: reclinks.ajaxUrl + '?action=vote_reclink',
         data: form.serialize() + '&vote=' + vote,
         complete: function(r) {
           var response;
@@ -33,6 +31,24 @@
         }
       });
       return false;
+    });
+    $('#reclink_URL').bind('change', function(event) {
+      var linkUrl;
+      linkUrl = $(this).val();
+      $.ajax(reclinks.ajaxUrl + '?action=check_reclink_title', {
+        type: 'post',
+        data: {
+          url: linkUrl
+        },
+        complete: function(r) {
+          var response;
+          response = $.parseJSON(r.responseText);
+          if (response.title) {
+            return $('#reclink_title').val(response.title);
+          }
+        }
+      });
+      return null;
     });
     return null;
   });

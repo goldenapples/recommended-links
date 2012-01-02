@@ -7,20 +7,27 @@ add_filter( 'pre_get_posts', 'gad_reclinks_sortby' );
 function gad_reclinks_sortby( $query ) {
 
 	global $wp_the_query;
+	$reclinks_page = get_option( 'page_for_reclinks' );
 
-	if ( !is_post_type_archive('reclink') || ( $query !== $wp_the_query ) )
+	if ( !is_post_type_archive('reclink') && !is_page( $reclinks_page ) )
 		return $query;
 
-	$query->set( 'posts_per_page', 25 );
+	if ( $query !== $wp_the_query )
+		return $query;
 
-	$sortby = 'current'; // default sort
+	$reclinks_options = get_option( 'reclinks_settings' );
+
+	$posts_per_page = ( isset( $reclinks_options['posts_per_page'] ) ) ? $reclinks['posts_per_page'] : 25;
+	$sort_order = ( isset( $reclinks_options['sort_order'] ) ) ? $reclinks['sort_order'] : 'current';
+
+	$query->set( 'posts_per_page', $posts_per_page );
 
 	if ( isset( $_GET['sort'] ) && in_array(
 			$_GET['sort'], 
 			array( 'newest', 'hot', 'current', 'score' ) ) )
-		$sortby = $_GET['sort'];
+		$sort_order = $_GET['sort'];
 
-	switch ( $sortby ) :
+	switch ( $sort_order ) :
 		case 'score':
 			// default: order by vote total
 			$query->set( 'meta_key', '_vote_score' );
@@ -94,6 +101,9 @@ function gad_reclinks_orderby( $orderby ) {
 add_filter( 'the_content', 'gad_reclinks_show_votelinks' );
 
 function gad_reclinks_show_votelinks( $content ) {
+	if ( is_admin() )
+		return $content;
+
 	global $post;
 	if ( $post->post_type !== 'reclink' )
 		return $content;
@@ -105,6 +115,9 @@ function gad_reclinks_show_votelinks( $content ) {
 add_filter( 'comment_text', 'reclinks_comment_show_votelinks' );
 
 function reclinks_comment_show_votelinks( $comment_text, $comment = null ) {
+	if ( is_admin() )
+		return $comment_text;
+	
 	global $post;
 	if ( $post->post_type !== 'reclink' )
 		return $comment_text;

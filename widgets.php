@@ -30,17 +30,9 @@ function gad_reclinks_widgets() {
 			$entry_title = empty($instance['entry_title']) ? ' ' : apply_filters('widget_entry_title', $instance['entry_title']);
 			if ( !empty( $title ) ) 
 				echo $before_title . $title . $after_title;
-		?>
-			<form class="reclinks_addlink" action="<?php echo add_query_arg( 'action', 'reclink-add' ); ?>" method="POST">
-				<label for="reclink_URL"><?php _e('Link URL', 'gad_reclinks'); ?></label>
-				<input type="text" name="reclink_URL" />
-				<label for="reclink_title"><?php _e('Link Title', 'gad_reclinks'); ?></label>
-				<input type="text" name="reclink_title" />
-				<label for="reclink_description"><?php _e('Link Description', 'gad_reclinks'); ?></label>
-				<textarea id="reclink_description" name="reclink_description" rows="10" cols="30"></textarea>
-				<button type="submit" id="reclink_submit"><?php _e( 'Submit Link', 'gad_reclinks' ); ?></button>
-			</form>
-		<?php	
+
+			echo output_addlink_form();
+
 			echo $after_widget;
 		}
 

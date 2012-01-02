@@ -9,7 +9,7 @@ Author URI: http://goldenapplesdesign.com
 */
 
 // Variable definitions first
-$reclinks_theme_options = get_option('reclinks_plugin_options');
+$reclinks_options = get_option('reclinks_plugin_options');
 
 // Register reclinks_votes table so it can be used with $wpdb class
 global $wpdb;
@@ -23,10 +23,12 @@ if ( isset( $plugin ) )
 else define( 'RECLINKS_DIRECTORY', plugin_dir_url( __FILE__ ) );
 
 // Required files
+require_once( plugin_dir_path( __FILE__ ) . '/admin-functions.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/user-functions.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/widgets.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/ajax-functions.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/display-filters.php' );
+require_once( plugin_dir_path( __FILE__ ) . '/display-shortcodes.php' );
 
 // Register custom post type required for this work
 add_action( 'init', 'register_cpt_reclink' );

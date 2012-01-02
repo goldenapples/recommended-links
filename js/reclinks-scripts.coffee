@@ -2,9 +2,8 @@ jQuery ($) ->
 	$('form.reclinks_addlink').bind 'submit', (event) ->
 		event.preventDefault
 		alert 'submitting'
-		$.ajax
+		$.ajax reclinks.ajaxUrl + '?action=add_reclink',
 			type: 'post'
-			url: reclinks.ajaxUrl + '?action=add_reclink'
 			data: $(this).serialize()
 			complete: () ->
 				alert 'Link Submitted!'
@@ -13,9 +12,8 @@ jQuery ($) ->
 		event.preventDefault
 		form = $(this).parent('form')
 		vote = $(this).data('vote')
-		$.ajax
+		$.ajax reclinks.ajaxUrl + '?action=vote_reclink',
 			type: 'post'
-			url: reclinks.ajaxUrl + '?action=vote_reclink'
 			data: form.serialize() + '&vote=' + vote
 			complete: (r) ->
 				response = $.parseJSON(r.responseText)
@@ -24,4 +22,14 @@ jQuery ($) ->
 				else
 					form.find('.votescore').text( response.newCount );
 		return false
+	$('#reclink_URL').bind 'change', (event) ->
+		linkUrl = $(this).val()
+		$.ajax reclinks.ajaxUrl + '?action=check_reclink_title',
+			type: 'post',
+			data: { url: linkUrl },
+			complete: (r) ->
+				response = $.parseJSON(r.responseText)
+				if ( response.title )
+					$('#reclink_title').val response.title
+		null
 	null

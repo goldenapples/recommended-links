@@ -76,3 +76,24 @@ function gad_reclinks_ajax_vote() {
 
 }
 
+add_action( 'wp_ajax_check_reclink_title', 'gad_reclinks_check_link_title' );
+add_action( 'wp_ajax_nopriv_check_reclink_title', 'gad_reclinks_check_link_title' );
+
+function gad_reclinks_check_link_title() {
+	$link = esc_url( $_POST['url'] );
+	if ( !$link ) {
+		$return['exception'] = 'Invalid URL';
+	}
+	$response = wp_remote_get( $link );
+	if ( $response ) {
+		$doc = new DOMDocument();
+		$doc->strictErrorChecking = FALSE;
+		$doc->loadHTML( $response['body'] );
+		$xml = simplexml_import_dom($doc);
+		$title = $xml->head->title;
+		$return['title'] = (string)$title;
+	}
+	die( json_encode( $return ) );
+
+
+}
