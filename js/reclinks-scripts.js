@@ -8,6 +8,7 @@
         type: 'post',
         data: form.serialize(),
         complete: function() {
+          form.find;
           return form[0].reset();
         }
       });
@@ -36,18 +37,26 @@
     $('#reclink_URL').bind('change', function(event) {
       var linkUrl;
       linkUrl = $(this).val();
-      $.ajax(reclinks.ajaxUrl + '?action=check_reclink_title', {
-        type: 'post',
+      $.ajax('http://query.yahooapis.com/v1/public/yql', {
+        type: 'get',
         data: {
-          url: linkUrl
+          q: "use 'http://www.datatables.org/data/htmlstring.xml' as htmlstring; select * from htmlstring where url='" + linkUrl + "'",
+          format: 'json'
         },
-        complete: function(r) {
-          var response;
-          response = $.parseJSON(r.responseText);
-          if (response.title) {
-            if ($('#reclink_title').val() !== !'') {
-              return $('#reclink_title').val(response.title);
-            }
+        dataType: 'json',
+        success: function(r) {
+          var response, title;
+          response = r.query.results;
+          if (!response) {
+            alert('404 error?!');
+            return false;
+          }
+          title = response.result.match(/<\s*title\s*>([^<]*)<\/title>/)[1];
+          if (!title) {
+            alert('Document has no title?!');
+          }
+          if ($('#reclink_title').val() !== !'') {
+            return $('#reclink_title').val(title);
           }
         }
       });
