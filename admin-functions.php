@@ -11,7 +11,7 @@ function reclinks_admin_pages() {
 function reclinks_plugin_settings() {
 	if ( !empty( $_POST ) && check_admin_referer( 'gad-reclinks-settings', '_wpnonce') )
 		update_reclinks_settings();
-	$current_settings = get_option( 'reclinks_settings' );
+	$current_settings = get_option( 'reclinks_plugin_options' );
 ?>
 	<div class="wrap">
 		<h2><?php _e( 'Recommended Links Plugin Settings', 'gad_reclinks' ); ?></h2>

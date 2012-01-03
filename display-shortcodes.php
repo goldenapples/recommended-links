@@ -7,12 +7,12 @@ function output_addlink_form( $echo = false ) {
 ?>
 	<form class="reclinks_addlink" action="<?php echo add_query_arg( 'action', 'reclink-add' ); ?>" method="POST">
 		<label for="reclink_URL"><?php _e('Link URL', 'gad_reclinks'); ?></label>
-		<input type="text" name="reclink_URL" id="reclink_URL" />
+		<input type="text" name="reclink_URL" id="reclink_URL" tabindex="1"/>
 		<label for="reclink_title"><?php _e('Link Title', 'gad_reclinks'); ?></label>
-		<input type="text" name="reclink_title" id="reclink_title" />
+		<input type="text" name="reclink_title" id="reclink_title" tabindex="3"/>
 		<label for="reclink_description"><?php _e('Link Description', 'gad_reclinks'); ?></label>
-		<textarea id="reclink_description" name="reclink_description" rows="10" cols="30"></textarea>
-		<button type="submit" id="reclink_submit"><?php _e( 'Submit Link', 'gad_reclinks' ); ?></button>
+		<textarea id="reclink_description" name="reclink_description" rows="10" cols="30" tabindex="2"></textarea>
+		<p><button type="submit" id="reclink_submit"><?php _e( 'Submit Link', 'gad_reclinks' ); ?></button></p>
 	</form>
 <?php
 	$output = ob_get_contents();

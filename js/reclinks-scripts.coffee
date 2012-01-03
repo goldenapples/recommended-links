@@ -1,12 +1,12 @@
 jQuery ($) ->
 	$('form.reclinks_addlink').bind 'submit', (event) ->
 		event.preventDefault
-		alert 'submitting'
+		form = $(this)
 		$.ajax reclinks.ajaxUrl + '?action=add_reclink',
 			type: 'post'
-			data: $(this).serialize()
+			data: form.serialize()
 			complete: () ->
-				alert 'Link Submitted!'
+				form[0].reset()
 		return false
 	$('form.reclinks_vote button').bind 'click', (event) ->
 		event.preventDefault
@@ -30,6 +30,6 @@ jQuery ($) ->
 			complete: (r) ->
 				response = $.parseJSON(r.responseText)
 				if ( response.title )
-					$('#reclink_title').val response.title
+					$('#reclink_title').val response.title unless $('#reclink_title').val() is not ''
 		null
 	null

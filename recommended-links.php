@@ -81,6 +81,16 @@ include_once( plugin_dir_path( __FILE__ ) . 'plugin-activation.php' );
 register_activation_hook( __FILE__, 'reclinks_install' );
 register_deactivation_hook( __FILE__, 'reclinks_uninstall');
 
+
+add_action( 'admin_init', 'gad_check_db_tables' );
+
+function gad_check_db_tables() {
+	$v = get_option( 'reclinks_db_version' );
+	if ( !$v || $v < 2 )
+		reclinks_db_option_upgrade( $v );
+}
+
+
 // Enqueue javascript and CSS on front end
 add_action( 'wp_enqueue_scripts', 'gad_reclinks_enqueues' );
 
@@ -97,6 +107,7 @@ function gad_reclinks_enqueues() {
 	wp_enqueue_style( 'reclinks', RECLINKS_DIRECTORY . 'reclinks-styles.css' );
 }
 
+
 /**
  * @function	gad_add_reclink
  *
@@ -112,6 +123,8 @@ function gad_reclinks_enqueues() {
  */
 
 function gad_add_reclink( $reclink ) {
+	global $current_user;
+
 	// Check to see that user is authorized to add link
 	if ( !current_user_can( 'add_reclink' ) )
 		return false;
@@ -137,6 +150,7 @@ function gad_add_reclink( $reclink ) {
 
 	return $link_ID;
 }
+
 
 /**
  * @function	gad_add_reclink_vote

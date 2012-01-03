@@ -1,13 +1,14 @@
 (function() {
   jQuery(function($) {
     $('form.reclinks_addlink').bind('submit', function(event) {
+      var form;
       event.preventDefault;
-      alert('submitting');
+      form = $(this);
       $.ajax(reclinks.ajaxUrl + '?action=add_reclink', {
         type: 'post',
-        data: $(this).serialize(),
+        data: form.serialize(),
         complete: function() {
-          return alert('Link Submitted!');
+          return form[0].reset();
         }
       });
       return false;
@@ -44,7 +45,9 @@
           var response;
           response = $.parseJSON(r.responseText);
           if (response.title) {
-            return $('#reclink_title').val(response.title);
+            if ($('#reclink_title').val() !== !'') {
+              return $('#reclink_title').val(response.title);
+            }
           }
         }
       });

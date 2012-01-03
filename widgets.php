@@ -92,7 +92,7 @@ function gad_reclinks_widgets() {
 			if ( $links->have_posts() ) :
 				echo '<ul>';
 				while ( $links->have_posts() ) : $links->the_post();
-					echo '<li><a href="'; the_permalink(); echo '" title="'.the_title_attribute().'" >'.get_the_title().'</a> ';
+					echo '<li><a href="'; the_permalink(); echo '" title="'.the_title_attribute('echo=0').'" >'.get_the_title().'</a> ';
 					if ( $instance['domain'] )
 						echo '<small>(' . reclinks_domain( false ) . ')</small>';
 					echo '<br / >' . reclinks_votebox( false ) . '</li>';
