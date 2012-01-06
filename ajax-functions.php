@@ -23,7 +23,8 @@ function reclink_frontend_entries() {
 		$reclink = array(
 			'reclink_url' => esc_url( $_POST['reclink_URL'] ),
 			'reclink_title' => sanitize_text_field( $_POST['reclink_title'] ),
-			'reclink_description' => wp_filter_post_kses( $_POST['reclink_description'] )
+			'reclink_description' => wp_filter_post_kses( $_POST['reclink_description'] ),
+			'reclink_taxes' => ( isset( $_POST['reclink_taxes'] ) ) ? $_POST['reclink_taxes'] : null
 		);
 		gad_add_reclink( $reclink );
 	} 
@@ -44,13 +45,18 @@ function reclink_frontend_entries() {
 add_action( 'wp_ajax_add_reclink', 'gad_reclinks_ajax_add' );
 
 function gad_reclinks_ajax_add() {
-	if ( !current_user_can( 'add_reclink' ) )
+	$plugin_settings = get_option( 'reclinks_plugin_settings' );
+
+	if ( !$plugin_settings['allow-unregistered-post'] && !current_user_can( 'add_reclink' ) )
 		die( json_encode( array( 'exception' => 'Current user is not authorized to add links' ) ) );
+
 	$reclink = array(
 		'reclink_url' => esc_url( $_POST['reclink_URL'] ),
 		'reclink_title' => sanitize_text_field( $_POST['reclink_title'] ),
-		'reclink_description' => wp_filter_post_kses( $_POST['reclink_description'] )
+		'reclink_description' => wp_filter_post_kses( $_POST['reclink_description'] ),
+		'reclink_taxes' => $_POST['reclink_taxes']
 	);
+
 	$link = gad_add_reclink( $reclink );
 	echo json_encode( get_post( $link ) );
 	die();
@@ -61,10 +67,12 @@ add_action( 'wp_ajax_vote_reclink', 'gad_reclinks_ajax_vote' );
 add_action( 'wp_ajax_nopriv_vote_reclink', 'gad_reclinks_ajax_vote' );
 
 function gad_reclinks_ajax_vote() {
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+
 	global $current_user;
 	get_currentuserinfo();
 
-	if ( !current_user_can( 'vote_reclink' ) )
+	if ( !$plugin_settings['allow-unregistered-vote'] && !current_user_can( 'vote_reclink' ) )
 		die( json_encode( array( 'exception' => 'Current user is not authorized to add links' ) ) );
 
 	$comment = ( isset( $_POST['comment'] ) ) ? intval( $_POST['comment'] ) : 0;

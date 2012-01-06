@@ -54,6 +54,7 @@
           title = response.result.match(/<\s*title\s*>([^<]*)<\/title>/)[1];
           if (!title) {
             alert('Document has no title?!');
+            return false;
           }
           if ($('#reclink_title').val() !== !'') {
             return $('#reclink_title').val(title);

@@ -40,6 +40,7 @@ jQuery ($) ->
 				title = response.result.match( /<\s*title\s*>([^<]*)<\/title>/ )[1]
 				unless title
 					alert 'Document has no title?!'
+					return false
 				$('#reclink_title').val title unless $('#reclink_title').val() is not ''
 		null
 	null
