@@ -10,7 +10,7 @@ A sort of "Reddit clone" that allows users to post links, up- or down-vote them,
 
 == Description ==
 
-This is the beginnings of a much more ambitious project. At the moment, there is no admin options screen and functionality is a bit limited. However, if you want to try this out, please give me feedback.
+This is the beginning of what I hope will be a much more ambitious project. If you want to try this out, please give me feedback.
 
 I will guarantee backwards compatibility with all data saved by the plugin, so it should be safe to install and activate, and as I add features, your existing posts and links will work with them just fine.
 

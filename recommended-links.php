@@ -156,8 +156,6 @@ function gad_add_reclink( $reclink ) {
 		'tax_input'		=> $reclink['reclink_taxes']
 	) );
 
-	var_dump( $reclink );
-
 	update_post_meta( $link_ID, '_href', $reclink['reclink_url'] );
 	update_post_meta( $link_ID, '_vote_score', 1 );
 

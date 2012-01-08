@@ -19,7 +19,7 @@ function reclink_frontend_entries() {
 	if ( !isset( $_GET['action'] ) )
 		return;
 
-	if ( 'reclink-add' === $_GET['action'] ) {
+	if ( 'reclink-add' === $_GET['action'] && !empty( $_POST['reclink_URL'] ) ) {
 		$reclink = array(
 			'reclink_url' => esc_url( $_POST['reclink_URL'] ),
 			'reclink_title' => sanitize_text_field( $_POST['reclink_title'] ),
@@ -29,7 +29,7 @@ function reclink_frontend_entries() {
 		gad_add_reclink( $reclink );
 	} 
 
-	if ( 'reclink-vote' === $_GET['action'] ) {		
+	if ( 'reclink-vote' === $_GET['action'] && !empty( $_POST['reclink'] ) ) {		
 		global $current_user;
 		get_currentuserinfo();
 
