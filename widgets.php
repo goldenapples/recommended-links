@@ -84,22 +84,20 @@ function gad_reclinks_widgets() {
 			if ( !empty( $title ) ) 
 				echo $before_title . $title . $after_title;
 
-			$links = new WP_Query( array(
+
+			global $wp_query;
+			$old_query = $wp_query;
+
+			$wp_query = new WP_Query( array(
 				'post_type' => 'reclink',
-				'posts_per_page' => intval( $instance['number'] )
+				'posts_per_page' => intval( $instance['number'] ),
+				'reclinks_sort' => 'current'
 			) );
 
-			if ( $links->have_posts() ) :
-				echo '<ul>';
-				while ( $links->have_posts() ) : $links->the_post();
-					echo '<li><a href="'; the_permalink(); echo '" title="'.the_title_attribute('echo=0').'" >'.get_the_title().'</a> ';
-					if ( $instance['domain'] )
-						echo '<small>(' . reclinks_domain( false ) . ')</small>';
-					echo '<br / >' . reclinks_votebox( false ) . '</li>';
-				endwhile;
+			if ( '' === locate_template( 'loop-reclinks.php', true, false ) )
+				include( 'loop-reclinks.php' );
 
-				echo '</ul>';
-			endif;
+			$wp_query = $old_query;
 
 			if ( $instance['links'] !== 'none' ):
 

@@ -3,13 +3,14 @@
     $('form.reclinks_addlink').bind('submit', function(event) {
       var form;
       event.preventDefault;
-      form = $(this);
+      form = $(this).fadeOut();
       $.ajax(reclinks.ajaxUrl + '?action=add_reclink', {
         type: 'post',
         data: form.serialize(),
         complete: function() {
           form.find;
-          return form[0].reset();
+          form[0].reset();
+          return form.prepend("<div class='message'><strong>" + reclinks.messages.linkSubmit + "</strong></div>").fadeIn();
         }
       });
       return false;
@@ -48,12 +49,12 @@
           var response, title;
           response = r.query.results;
           if (!response) {
-            alert('404 error?!');
+            alert(reclinks.messages.error404);
             return false;
           }
           title = response.result.match(/<\s*title\s*>([^<]*)<\/title>/)[1];
           if (!title) {
-            alert('Document has no title?!');
+            alert(reclinks.messages.errorNoTitle);
             return false;
           }
           if ($('#reclink_title').val() !== !'') {

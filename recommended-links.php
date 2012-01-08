@@ -103,7 +103,12 @@ function gad_reclinks_enqueues() {
 	wp_localize_script( 'reclinks-scripts', 'reclinks', 
 		array( 
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ), 
-			'loginUrl' => wp_login_url( ( !empty( $_SERVER['HTTPS'] ) ? 'https://' : 'http://' ) .$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ) 
+			'loginUrl' => wp_login_url( ( !empty( $_SERVER['HTTPS'] ) ? 'https://' : 'http://' ) .$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ),
+			'messages' => array(
+				'linkSubmitted' => __( 'Link submitted successfully.', 'gad_reclinks' ),
+				'error404' 		=> __( 'The submitted link could not be found.', 'gad_reclinks' ),
+				'errorNoTitle' 	=> __( 'The document does not appear to have a title.', 'gad_reclinks' )
+			)
 		) 
 	);
 	wp_enqueue_style( 'reclinks', RECLINKS_DIRECTORY . 'reclinks-styles.css' );

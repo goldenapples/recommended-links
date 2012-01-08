@@ -28,7 +28,7 @@ function reclinks_plugin_settings() {
 								'selected' => $current_settings['page_for_reclinks']
 							)
 						); ?>
-	<p class="description"><?php _e( 'Note: if you choose a custom page to hold your archive, you can add content above the archive. The page template you select will be used for styling purposes.', 'gad_reclinks' ); ?></p>
+	<p class="description"><?php _e( 'Note: if you choose a custom page to hold your archive, you can add content above the archive.<br>The page template you select will be used for styling purposes.', 'gad_reclinks' ); ?></p>
 					</td>
 				</tr>
 				<tr>
@@ -69,11 +69,14 @@ function reclinks_plugin_settings() {
 					<p>
 						<input type="checkbox" name="allow-unregistered-vote" <?php checked( $current_settings['allow-unregistered-vote'] ); ?>/>
 						<label for="allow-unregistered-vote"><?php _e( 'Allow unregistered users to vote?', 'gad_reclinks' ); ?></label>
+						<br><span class="description"><?php _e('(Votes will be logged by IP address.)', 'gad_reclinks' ); ?></span>
 					</p>
+<!---
 					<p>
 						<input type="checkbox" name="allow-unregistered-post" <?php checked( $current_settings['allow-unregistered-post'] ); ?>/>
 						<label for="allow-unregistered-post"><?php _e( 'Allow unregistered users to post new links?', 'gad_reclinks' ); ?></label>
 					</p>
+-->
 				</td>
 			</tr>
 		<tr>

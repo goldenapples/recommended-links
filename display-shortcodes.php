@@ -37,4 +37,27 @@ function output_addlink_form( $echo = false ) {
 	if ( $echo === true ) echo $output; else return $output;
 }
 
-
+/**
+ * Display the terms (of any taxonomy) associated with a given link.
+ *
+ * A wrapper around the_terms, which loops through all taxonomies, displaying
+ * All the terms in each category. Accepts the same parameters as the_terms.
+ *
+ * @param	string	Text to display before the list of terms
+ * @param	string	Text to display in between each term
+ * @param	string	Text to display after the list of terms
+ *
+ */
+function reclink_terms( $before = '<span class="terms-%s">[', $sep = ', ', $after = ']</span> ' ) {
+	global $post;
+	$obj = get_post_type_object( $post->post_type );
+	$taxes = $obj->taxonomies;
+	if ( $taxes ) {
+		foreach ( $taxes as $tax ) {
+			$tax_before = str_replace( '%s', $tax, $before );
+			$tax_sep 	= str_replace( '%s', $tax, $sep );
+			$tax_after 	= str_replace( '%s', $tax, $after );
+			the_terms( $post->ID, $tax, $tax_before, $tax_sep, $tax_after );
+		}
+	}
+}

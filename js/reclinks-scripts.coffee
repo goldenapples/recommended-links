@@ -1,13 +1,14 @@
 jQuery ($) ->
 	$('form.reclinks_addlink').bind 'submit', (event) ->
 		event.preventDefault
-		form = $(this)
+		form = $(this).fadeOut()
 		$.ajax reclinks.ajaxUrl + '?action=add_reclink',
 			type: 'post'
 			data: form.serialize()
 			complete: () ->
 				form.find
 				form[0].reset()
+				form.prepend("<div class='message'><strong>#{ reclinks.messages.linkSubmit }</strong></div>").fadeIn()
 		return false
 	$('form.reclinks_vote button').bind 'click', (event) ->
 		event.preventDefault
@@ -35,11 +36,11 @@ jQuery ($) ->
 			success: (r) ->
 				response = r.query.results
 				unless response
-					alert '404 error?!'
+					alert reclinks.messages.error404
 					return false
 				title = response.result.match( /<\s*title\s*>([^<]*)<\/title>/ )[1]
 				unless title
-					alert 'Document has no title?!'
+					alert reclinks.messages.errorNoTitle
 					return false
 				$('#reclink_title').val title unless $('#reclink_title').val() is not ''
 		null

@@ -1,31 +1,46 @@
 <?php
 
-// Query filters for reclinks
+/**
+ * Query filters for reclinks
+ * 
+ *
+ */
+
+
+add_filter('query_vars', 'gad_reclinks_add_query_vars');
+
+function gad_reclinks_add_query_vars( $query_vars ) {
+    $query_vars[] = "reclinks_sort";
+    return $query_vars;
+}
+
 
 add_filter( 'pre_get_posts', 'gad_reclinks_sortby' );
 
 function gad_reclinks_sortby( $query ) {
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
 
 	global $wp_the_query;
-	$reclinks_page = get_option( 'page_for_reclinks' );
 
-	if ( !is_post_type_archive('reclink') && !is_page( $reclinks_page ) )
+	if ( !isset( $query->query_vars['post_type'] ) || $query->query_vars['post_type'] !== 'reclink')
 		return $query;
+	
+	if ( $query === $wp_the_query ) {
+		$posts_per_page = ( isset( $plugin_settings['posts_per_page'] ) ) ? $plugin_settings['posts_per_page'] : 25;
+		$query->set( 'posts_per_page', $posts_per_page );
+	}
 
-	if ( $query !== $wp_the_query )
-		return $query;
-
-	$reclinks_options = get_option( 'reclinks_settings' );
-
-	$posts_per_page = ( isset( $reclinks_options['posts_per_page'] ) ) ? $reclinks['posts_per_page'] : 25;
-	$sort_order = ( isset( $reclinks_options['sort_order'] ) ) ? $reclinks['sort_order'] : 'current';
-
-	$query->set( 'posts_per_page', $posts_per_page );
+	$sort_order = ( isset( $plugin_settings['sort_order'] ) ) ? $plugin_settings['sort_order'] : 'current';
 
 	if ( isset( $_GET['sort'] ) && in_array(
 			$_GET['sort'], 
 			array( 'newest', 'hot', 'current', 'score' ) ) )
 		$sort_order = $_GET['sort'];
+
+	if ( isset( $query->query_vars['reclinks_sort'] ) && in_array(
+			$query->query_vars['reclinks_sort'], 
+			array( 'newest', 'hot', 'current', 'score' ) ) )
+		$sort_order = $query->query_vars['reclinks_sort'];
 
 	switch ( $sort_order ) :
 		case 'score':
@@ -98,6 +113,14 @@ function gad_reclinks_orderby( $orderby ) {
 	return $orderby;
 }
 
+
+/**
+ * By default, filters the_content to add the vote box above the content 
+ * (the link description). If you would like to add the vote box in a different 
+ * location, you can remove this filter and include the template tag
+ * reclinks_votebox() in your theme files.
+ *
+ */
 add_filter( 'the_content', 'gad_reclinks_show_votelinks' );
 
 function gad_reclinks_show_votelinks( $content ) {
@@ -112,6 +135,14 @@ function gad_reclinks_show_votelinks( $content ) {
 	return $content;
 }
 
+
+/**
+ * By default, filters comment_text to add the vote box above the comment text. 
+ * If you would like to add the vote box in a different location, you can remove 
+ * this filter and include the template tag reclinks_votebox() in your comment
+ * callback function
+ *
+ */
 add_filter( 'comment_text', 'reclinks_comment_show_votelinks' );
 
 function reclinks_comment_show_votelinks( $comment_text, $comment = null ) {
@@ -143,6 +174,7 @@ function reclinks_votebox ( $echo = true ) {
 		return;
 
 	if ( !isset( $comment ) ) {
+
 		// votebox on recommended link itself
 		$current_score = get_post_meta( $post->ID, '_vote_score', true );
 		$comments_number = get_comments_number();
@@ -160,6 +192,7 @@ function reclinks_votebox ( $echo = true ) {
 		$comment_ID = 0;
 
 	} else {
+
 		// fields relevant to comments
 		$current_score = $comment->comment_karma;
 		$comments_link_text = '';
@@ -208,6 +241,13 @@ VOTEBOX;
 		return $votebox;
 }
 
+
+/**
+ * For recommended links, the_permalink is filtered to echo the link submitted,
+ * not the permalink of the comments page on your site. To get the discussion page
+ * permalink instead, use get_permalink() or another similar function.
+ *
+ */
 add_filter( 'the_permalink', 'gad_reclinks_permalink' );
 
 function gad_reclinks_permalink( $permalink ) {
@@ -217,8 +257,7 @@ function gad_reclinks_permalink( $permalink ) {
 	return $permalink;
 }
 
-// the price you pay for typos in documentation
-function reclink_domain( $echo = true ) { return reclinks_domain( $echo ); }
+function reclink_domain( $echo = true ) { return reclinks_domain( $echo ); } // the price you pay for typos in documentation
 
 function reclinks_domain( $echo = true ) {
 	global $post;
@@ -230,3 +269,59 @@ function reclinks_domain( $echo = true ) {
 		return $host;
 }
 
+
+/**
+ * A "pseudo-loop" for the page designated as "Page for Recommended Links Archive"
+ *
+ * Uses the WP_Query object to retrieve posts, the loop-reclinks.php template to display
+ * them, and the WordPress functions get_previous_posts_page and get_next_posts_page.
+ * In short, it basically functions just like a regular archive page, except for the 
+ * template and the WordPress conditional tags, (ie. `is_archive()` will return false).
+ */
+add_filter( 'the_content', 'gad_reclinks_page' );
+
+function gad_reclinks_page( $content ) {
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+
+	if ( !$plugin_settings['page_for_reclinks'] || !is_page( $plugin_settings['page_for_reclinks'] ) )
+		return $content;	
+
+	global $wp_query;
+
+	$links_paged = ( isset( $wp_query->query_vars['paged'] ) ) ? $wp_query->query_vars['paged'] : 1;
+	$posts_per_page = ( isset( $plugin_settings['posts_per_page'] ) ) ? $plugin_settings['posts_per_page'] : 25;
+
+	$old_query = $wp_query;
+	$wp_query = new WP_Query( array(
+		'post_type' => 'reclink',
+		'reclinks_sort' => $plugin_settings['sort_order'],
+		'posts_per_page' => $posts_per_page,
+		'paged' => $links_paged
+	) );
+
+
+	/*
+	 * Basic structure for prev/next links,
+	 * should be built out a little more in future releases.
+	 */
+	$found_posts = $wp_query->found_posts;
+
+	$links_navigation = '<div class="links-navigation">' ;
+
+	if ( $links_paged > 1 ) 
+		$links_navigation .= '<div class="nav-previous">' . get_previous_posts_link() . '</div>';
+	
+	if ( $found_posts > $posts_per_page * $links_paged )
+		$links_navigation .= '<div class="nav-next">' . get_next_posts_link() . '</div>';
+
+	$links_navigation .= '</div>';
+
+	ob_start();
+	if ( '' === locate_template( 'loop-reclinks.php', true, false ) )
+		include( 'loop-reclinks.php' );
+	$links_archive = ob_get_clean();
+
+	$wp_query = $old_query;
+	return $content . $links_archive . $links_navigation;
+
+}
