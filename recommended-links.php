@@ -53,11 +53,13 @@ function register_cpt_reclink() {
         'menu_name' => _x( 'RecLinks', 'reclink' ),
     );
 
+	$taxonomies = is_array( $plugin_settings['tax'] ) ? array_keys( $plugin_settings['tax'] ) : null;
+
     $args = array( 
         'labels' => $labels,
         'hierarchical' => false,
         'supports' => array( 'title', 'editor', 'excerpt', 'author', 'custom-fields', 'comments' ),
-        'taxonomies' => array_keys( $plugin_settings['tax'] ),
+        'taxonomies' => $taxonomies,
         'public' => true,
         'show_ui' => true,
         'show_in_menu' => true,
