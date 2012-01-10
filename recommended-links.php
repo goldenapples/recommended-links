@@ -53,7 +53,7 @@ function register_cpt_reclink() {
         'menu_name' => _x( 'RecLinks', 'reclink' ),
     );
 
-	$taxonomies = is_array( $plugin_settings['tax'] ) ? array_keys( $plugin_settings['tax'] ) : null;
+	$taxonomies = is_array( $plugin_settings['tax'] ) ? array_keys( $plugin_settings['tax'] ) : array();
 
     $args = array( 
         'labels' => $labels,
