@@ -57,22 +57,25 @@ function reclinks_install() {
  **/
 function reclinks_db_option_upgrade( $from ) {
 
-	/* DB version 2, reflects plugin version 0.4. First user-editable settings. */
-	if ( !$from || $from < 2 ) {
-		$reclinks_plugin_defaults = array(
-			'vote-values' => array(
-				'minus' => array( 'value' => -1, 'text' => '-' ),
-				'plus' => array( 'value' => 1, 'text' => '+' )
-			),
-			'page-for-reclinks' => false,
-			'sort-order' => 'current',
-			'allow-unregistered-vote' => false,
-			'allow-unregistered-post' => false
-		);
-	}
+	$old_settings = ( $from ) ? get_option( 'reclinks_plugin_options' ) : array();
 
-	update_option( 'reclinks_plugin_options', $reclinks_plugin_defaults );
-	update_option( 'reclinks_db_version', 2 );
+	/* DB version 3, reflects plugin version 0.3. Includes 'tax' string. */
+	$reclinks_plugin_defaults = array(
+		'vote-values' => array(
+			'minus' => array( 'value' => -1, 'text' => '-' ),
+			'plus' => array( 'value' => 1, 'text' => '+' )
+		),
+		'page_for_reclinks' => false,
+		'sort_order' => 'current',
+		'allow-unregistered-vote' => false,
+		'allow-unregistered-post' => false,
+		'tax' => array()
+	);
+
+	$options_to_set = wp_parse_args( $old_settings, $reclinks_plugin_defaults );
+
+	update_option( 'reclinks_plugin_options', $options_to_set );
+	update_option( 'reclinks_db_version', 3 );
 
 }
 

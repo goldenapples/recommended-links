@@ -57,7 +57,7 @@ function reclinks_plugin_settings() {
 			<?php $taxes = get_taxonomies( null, 'objects' );
 					foreach ($taxes as $name => $tax) 
 						if (!in_array( $name, array( 'nav_menu', 'link_category', 'post_format' ) ) )
-							echo '<p><input type="checkbox" name="tax['.$name.']" '.checked( $current_settings['tax'][$name], 'on', false ).'> '.$tax->labels->name .'</p>';
+							echo '<p><input type="checkbox" name="tax['.$name.']" '.checked( ( isset( $current_settings['tax'][$name] ) && $current_settings['tax'][$name] ), true, false ).'> '.$tax->labels->name .'</p>';
 			?>
 			</td>
 		</tr>
@@ -103,9 +103,9 @@ function update_reclinks_settings() {
 		array(
 			'page_for_reclinks' => intval( $_POST['page_id'] ),
 			'sort_order' => $_POST['sort_order'],
-			'tax' => $_POST['tax'],
-			'allow-unregistered-vote' => (true == $_POST['allow-unregistered-vote']),
-			'allow-unregistered-post' => (true == $_POST['allow-unregistered-post']),
+			'tax' => ( isset( $_POST['tax'] ) ) ? $_POST['tax'] : array(),
+			'allow-unregistered-vote' => (isset($_POST['allow-unregistered-vote']) && true == $_POST['allow-unregistered-vote']),
+			'allow-unregistered-post' => (isset($_POST['allow-unregistered-post']) &&true == $_POST['allow-unregistered-post']),
 
 			// no UI for this yet, but its gotta be in there
 			'vote-values' => array(

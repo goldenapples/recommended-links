@@ -90,7 +90,7 @@ add_action( 'admin_init', 'gad_check_db_tables' );
 
 function gad_check_db_tables() {
 	$v = get_option( 'reclinks_db_version' );
-	if ( !$v || $v < 2 )
+	if ( !$v || $v < 3 )
 		reclinks_db_option_upgrade( $v );
 }
 
