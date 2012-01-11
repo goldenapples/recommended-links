@@ -16,9 +16,11 @@
       return false;
     });
     $('form.reclinks_vote button').bind('click', function(event) {
-      var form, vote;
+      var button, form, vote;
       event.preventDefault;
+      button = $(this);
       form = $(this).parent('form');
+      form.find('button').removeClass('current-vote');
       vote = $(this).data('vote');
       $.ajax(reclinks.ajaxUrl + '?action=vote_reclink', {
         type: 'post',
@@ -29,6 +31,7 @@
           if (response.exception) {
             return window.location.href = reclinks.loginUrl + '&msg=reclinks-login';
           } else {
+            button.addClass('current-vote');
             return form.find('.votescore').text(response.newCount);
           }
         }

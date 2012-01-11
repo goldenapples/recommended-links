@@ -12,7 +12,9 @@ jQuery ($) ->
 		return false
 	$('form.reclinks_vote button').bind 'click', (event) ->
 		event.preventDefault
+		button = $(this)
 		form = $(this).parent('form')
+		form.find('button').removeClass 'current-vote'
 		vote = $(this).data('vote')
 		$.ajax reclinks.ajaxUrl + '?action=vote_reclink',
 			type: 'post'
@@ -22,6 +24,7 @@ jQuery ($) ->
 				if ( response.exception )
 					window.location.href = reclinks.loginUrl + '&msg=reclinks-login'
 				else
+					button.addClass 'current-vote'
 					form.find('.votescore').text( response.newCount );
 		return false
 	$('#reclink_URL').bind 'change', (event) ->

@@ -7,6 +7,23 @@
 	margin-bottom: 6px;
 }
 
-.votelink.current_vote {
-	background: #cff;
+button.votelink {
+	font-size: 0;
+	content: " ";
+	display: inline-block;
+	vertical-align: middle;
+	width: 14px;
+	height: 14px;
+	margin: 0 1px;
+	padding: 0;
+	cursor: pointer;
+	border: none;
+	background: url( 'images/minus-plus-small.png' );
 }
+
+.votelink.votelink-minus { background-position: 0 0; }
+.votelink.votelink-plus { background-position: -14px 0; }
+.votelink.votelink-minus.current-vote { background-position: 0 -14px; }
+.votelink.votelink-plus.current-vote { background-position: -14px -14px; }
+.votelink.votelink-minus:hover { background-position: -28px -14px; }
+.votelink.votelink-plus:hover { background-position: -42px -14px; }
