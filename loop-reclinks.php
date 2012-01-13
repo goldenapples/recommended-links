@@ -26,7 +26,7 @@ $start =  ( $wp_query->query_vars['paged'] ) ?
 		<li>
 			<?php reclink_terms(); ?>
 			<strong><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></strong> 
-			<small>(<?php reclink_domain(); ?>)<small>
+			<small><?php reclinks_domain(); ?><small>
 			<br /><?php reclinks_votebox(); ?>
 		</li>
 	<?php endwhile; ?>

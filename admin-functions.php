@@ -80,6 +80,17 @@ function reclinks_plugin_settings() {
 				</td>
 			</tr>
 		<tr>
+			<th scope="row">
+				<label><?php _e( 'Comments:', 'gad_reclinks' ); ?></label>
+			</th>
+			<td>
+				<p>
+					<input type="checkbox" name="vote-on-comments" <?php checked( $current_settings['vote-on-comments'] ); ?> />
+					<label for="vote-on-comments"><?php _e( 'Enable voting / points tally on comments?', 'gad_reclinks' ); ?></label>
+				</p>
+			</td>
+		</tr>
+		<tr>
 			<th></th>
 			<td>
 				<?php wp_nonce_field( 'gad-reclinks-settings' ); ?>
@@ -105,7 +116,8 @@ function update_reclinks_settings() {
 			'sort_order' => $_POST['sort_order'],
 			'tax' => ( isset( $_POST['tax'] ) ) ? $_POST['tax'] : array(),
 			'allow-unregistered-vote' => (isset($_POST['allow-unregistered-vote']) && true == $_POST['allow-unregistered-vote']),
-			'allow-unregistered-post' => (isset($_POST['allow-unregistered-post']) &&true == $_POST['allow-unregistered-post']),
+			'allow-unregistered-post' => (isset($_POST['allow-unregistered-post']) && true == $_POST['allow-unregistered-post']),
+			'vote-on-comments' => (isset($_POST['vote-on-comments']) && true == $_POST['vote-on-comments']),
 
 			// no UI for this yet, but its gotta be in there
 			'vote-values' => array(

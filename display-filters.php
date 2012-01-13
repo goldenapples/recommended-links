@@ -137,15 +137,21 @@ function gad_reclinks_show_votelinks( $content ) {
 
 
 /**
- * By default, filters comment_text to add the vote box above the comment text. 
+ * By default, this function filters comment_text to add the vote box above the 
+ * comment text IF the setting "Enable voting / points tally on comments" is on.
  * If you would like to add the vote box in a different location, you can remove 
  * this filter and include the template tag reclinks_votebox() in your comment
- * callback function
- *
+ * callback function.
+ * 
  */
 add_filter( 'comment_text', 'reclinks_comment_show_votelinks' );
 
 function reclinks_comment_show_votelinks( $comment_text, $comment = null ) {
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+
+	if ( false == $plugin_settings['vote-on-comments'] )
+		return $comment_text;
+
 	if ( is_admin() )
 		return $comment_text;
 	
@@ -176,14 +182,17 @@ function gad_reclinks_permalink( $permalink ) {
 
 function reclink_domain( $echo = true ) { return reclinks_domain( $echo ); } // the price you pay for typos in documentation
 
-function reclinks_domain( $echo = true ) {
+function reclinks_domain( $echo = true, $before = '(', $after = ')' ) {
 	global $post;
 	if ( $href = get_post_meta( $post->ID, '_href', true ) )
 		$host = parse_url( $href, PHP_URL_HOST );
+	
+	if ( empty( $host ) ) return;
+
 	if ( $echo )
-		echo $host;
+		echo $before . $host . $after;
 	else 
-		return $host;
+		return $before . $host . $after;
 }
 
 
