@@ -8,7 +8,7 @@ jQuery ($) ->
 			complete: () ->
 				form.find
 				form[0].reset()
-				form.prepend("<div class='message'><strong>#{ reclinks.messages.linkSubmit }</strong></div>").fadeIn()
+				form.prepend("<div class='message'><strong>#{ reclinks.messages_linkSubmitted }</strong></div>").fadeIn()
 		return false
 	$('form.reclinks_vote button').bind 'click', (event) ->
 		event.preventDefault
@@ -39,11 +39,11 @@ jQuery ($) ->
 			success: (r) ->
 				response = r.query.results
 				unless response
-					alert reclinks.messages.error404
+					alert reclinks.messages_error404
 					return false
 				title = response.result.match( /<\s*title\s*>([^<]*)<\/title>/ )[1]
 				unless title
-					alert reclinks.messages.errorNoTitle
+					alert reclinks.messages_errorNoTitle
 					return false
 				$('#reclink_title').val title unless $('#reclink_title').val() is not ''
 		null

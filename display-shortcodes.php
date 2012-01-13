@@ -68,7 +68,7 @@ function reclinks_votebox ( $echo = true ) {
 		$author_link = ( get_the_author() ) 
 			?  '<a href="' . get_author_posts_url( $post->post_author ) . '">' . get_the_author() . '</a>' 
 			: "Anonymous";
-		$submit_time = '<a href="'.get_permalink( $post->ID ).'">'.human_time_diff( mysql2date( 'U', $post->post_date ) ) . ' ago</a>';
+		$submit_time = '<a href="'.get_permalink( $post->ID ).'">'.human_time_diff( mysql2date( 'U', $post->post_date ), current_time('timestamp') ) . ' ago</a>';
 
 		$comment_ID = 0;
 

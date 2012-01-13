@@ -106,13 +106,11 @@ function gad_reclinks_enqueues() {
 		array( 
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ), 
 			'loginUrl' => wp_login_url( ( !empty( $_SERVER['HTTPS'] ) ? 'https://' : 'http://' ) .$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ),
-			'messages' => array(
-				'linkSubmitted' => __( 'Link submitted successfully.', 'gad_reclinks' ),
-				'error404' 		=> __( 'The submitted link could not be found.', 'gad_reclinks' ),
-				'errorNoTitle' 	=> __( 'The document does not appear to have a title.', 'gad_reclinks' )
-			)
-		) 
-	);
+			'messages_linkSubmitted'	=> __( 'Link submitted successfully.', 'gad_reclinks' ),
+			'messages_error404' 		=> __( 'The submitted link could not be found.', 'gad_reclinks' ),
+			'messages_errorNoTitle' 	=> __( 'The document does not appear to have a title.', 'gad_reclinks' )
+			) 
+		);
 	wp_enqueue_style( 'reclinks', RECLINKS_DIRECTORY . 'reclinks-styles.css' );
 }
 
@@ -133,6 +131,7 @@ function gad_reclinks_enqueues() {
 
 function gad_add_reclink( $reclink ) {
 	global $current_user;
+	get_current_userinfo();
 
 	$plugin_settings = get_option( 'reclinks_plugin_options' );
 
@@ -151,7 +150,7 @@ function gad_add_reclink( $reclink ) {
 	
 	$link_ID = wp_insert_post( array(
 		'post_type' 	=> 'reclink',
-		'post_author' 	=> $current_user->user_id,
+		'post_author' 	=> $current_user->ID,
 		'post_title' 	=> $reclink['reclink_title'],
 		'post_content'	=> $reclink['reclink_description'],
 		'post_status'	=> 'publish',

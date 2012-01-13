@@ -10,7 +10,7 @@
         complete: function() {
           form.find;
           form[0].reset();
-          return form.prepend("<div class='message'><strong>" + reclinks.messages.linkSubmit + "</strong></div>").fadeIn();
+          return form.prepend("<div class='message'><strong>" + reclinks.messages_linkSubmitted + "</strong></div>").fadeIn();
         }
       });
       return false;
@@ -52,12 +52,12 @@
           var response, title;
           response = r.query.results;
           if (!response) {
-            alert(reclinks.messages.error404);
+            alert(reclinks.messages_error404);
             return false;
           }
           title = response.result.match(/<\s*title\s*>([^<]*)<\/title>/)[1];
           if (!title) {
-            alert(reclinks.messages.errorNoTitle);
+            alert(reclinks.messages_errorNoTitle);
             return false;
           }
           if ($('#reclink_title').val() !== !'') {

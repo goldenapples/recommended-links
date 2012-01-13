@@ -54,7 +54,7 @@ function gad_reclinks_ajax_add() {
 		'reclink_url' => esc_url( $_POST['reclink_URL'] ),
 		'reclink_title' => sanitize_text_field( $_POST['reclink_title'] ),
 		'reclink_description' => wp_filter_post_kses( $_POST['reclink_description'] ),
-		'reclink_taxes' => $_POST['reclink_taxes']
+		'reclink_taxes' => isset( $_POST['reclink_taxes'] ) ? $_POST['reclink_taxes'] : null
 	);
 
 	$link = gad_add_reclink( $reclink );
