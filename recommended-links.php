@@ -4,7 +4,7 @@ Plugin Name: Recommended Links
 Plugin URI: http://goldenapplesdesign.com/projects/recommended-links-plugin/
 Description: A "reddit clone" that runs in Wordpress.
 Author: Nathaniel Taintor
-Version: 0.3.3
+Version: 0.3.4
 Author URI: http://goldenapplesdesign.com
 */
 
@@ -130,7 +130,7 @@ function gad_reclinks_enqueues() {
 
 function gad_add_reclink( $reclink ) {
 	global $current_user;
-	get_current_userinfo();
+	get_currentuserinfo();
 
 	$plugin_settings = get_option( 'reclinks_plugin_options' );
 

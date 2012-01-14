@@ -4,7 +4,7 @@ Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
 Tested up to: 3.3.1
-Stable tag: 0.3.3
+Stable tag: 0.3.4
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
@@ -68,6 +68,10 @@ There are not many special display features yet. A partial listing:
 
 == Changelog ==
 
+= 0.3.4 =
+
+I broke posting of new links in the last update... this is just a quick fix to correct that. More changes to come soon.
+
 = 0.3.3 =
 
 Several bugfixes; added "vote on comments" option and styling for buttons.
@@ -108,19 +112,15 @@ I built a version 0.1 back in 2010 for a personal project, which was only half c
 
 == Upgrade Notice ==
 
-= 0.3.3 = 
+= 0.3.4 =
 
+I broke posting of new links in the last update (0.3.3)... this is just a quick fix to correct that. More changes to come soon.
+
+= 0.3.3 = 
 This update fixes several bugs that were pointed out (time zone setting, posts showing up as from "anonymous", update messages not defined), and adds an option to disable voting on comments. It also styles the +1/-1 buttons a bit - skins for the style will be selectable and overridable by version 0.4, but just for now I was tired of seeing the unstyled buttons.
 
 = 0.3 =
-
 This version includes a plugin settings page, as well as multiple new features:
-
-* Link title now auto-populates from the link URL, so users don't have to enter it by hand
-* Shortcode for link add form
-* Allows you to set an existing page as the archive, rather than use the WP archive page
-* Option to allow unregistered users to vote (tracks votes by IP address)
-* User karma functions - not in UI yet; but roughed out.
 
 = 0.2.2 =
 Added a widget to display the most recently posted links in the sidebar. Also, fixed some minor javascript and css errors.
