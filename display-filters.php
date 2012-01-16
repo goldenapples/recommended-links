@@ -25,6 +25,9 @@ function gad_reclinks_sortby( $query ) {
 	if ( !isset( $query->query_vars['post_type'] ) || $query->query_vars['post_type'] !== 'reclink')
 		return $query;
 	
+	if ( is_admin() )
+		return $query;
+
 	if ( $query === $wp_the_query ) {
 		$posts_per_page = ( isset( $plugin_settings['posts_per_page'] ) ) ? $plugin_settings['posts_per_page'] : 25;
 		$query->set( 'posts_per_page', $posts_per_page );

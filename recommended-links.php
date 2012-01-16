@@ -216,17 +216,17 @@ function gad_add_reclink_vote( $reclink, $comment = 0, $vote, $user, $userip ) {
 
 	if ( 0 === $comment) {
 		// vote on post, update post meta value
-		update_post_meta( $reclink, '_vote_score', $new_vote_total+1 );
+		update_post_meta( $reclink, '_vote_score', $new_vote_total );
 	} else {
 		// vote on comment, update comment karma value
 		wp_update_comment( array(
 			'comment_ID' => $comment,
-			'comment_karma' => $new_vote_total+1
+			'comment_karma' => $new_vote_total
 		) );	
 	}
 
 	do_action( 'reclink_add_vote', $reclink, $comment, $vote );
 
-	return $new_vote_total + 1;
+	return $new_vote_total;
 }
 

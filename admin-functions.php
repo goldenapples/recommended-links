@@ -128,3 +128,52 @@ function update_reclinks_settings() {
 	);
 	echo '<div id="message" class="messages updated"><p>Plugin settings updated!</p></div>';
 }
+
+/**
+ * Settings for edit.php and post.php pages
+ *
+ **/
+
+add_filter( 'manage_edit-reclink_columns', 'reclinks_votes_column_register' );
+
+function reclinks_votes_column_register( $columns ) {
+	$columns['vote-score'] = __( 'Votes', 'gad_reclinks' );
+	return $columns;
+}
+
+add_action( 'manage_posts_custom_column', 'reclinks_votes_column_display', 10, 2 );
+
+function reclinks_votes_column_display( $column_name, $post_id ) {
+	if ( 'vote-score' != $column_name )
+		return;
+	$total_score = get_post_meta( $post_id, '_vote_score', true );
+	echo '<b>' . __( 'Score:', 'gad_reclinks' ) . ' ' . $total_score . '</b><br>';
+
+	global $wpdb;
+	$plus = absint( $wpdb->get_var( "SELECT SUM(vote) FROM {$wpdb->reclinkvotes} WHERE post_id={$post_id} AND vote>0" ) );
+	$minus = absint( $wpdb->get_var( "SELECT SUM(vote) FROM {$wpdb->reclinkvotes} WHERE post_id={$post_id} AND vote<0" ) );
+
+	echo '<span class="description">' . "( + $plus / - $minus )";
+
+}
+
+add_filter( 'manage_edit-reclink_sortable_columns', 'reclink_column_register_sortable' );
+
+function reclink_column_register_sortable( $columns ) {
+	$columns['vote-score'] = 'vote-score';
+ 
+	return $columns;
+}
+
+add_filter( 'request', 'votescore_column_orderby' );
+
+function votescore_column_orderby( $vars ) {
+	if ( isset( $vars['orderby'] ) && 'vote-score' == $vars['orderby'] ) {
+		$vars = array_merge( $vars, array(
+			'meta_key' => '_vote_score',
+			'orderby' => 'meta_value_num'
+		) );
+	}
+ 
+	return $vars;
+}
