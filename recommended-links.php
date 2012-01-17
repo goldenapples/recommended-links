@@ -157,7 +157,8 @@ function gad_add_reclink( $reclink ) {
 	) );
 
 	update_post_meta( $link_ID, '_href', $reclink['reclink_url'] );
-	update_post_meta( $link_ID, '_vote_score', 1 );
+
+	gad_add_reclink_vote( $link_ID, 0, 1, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
 
 	return $link_ID;
 }
