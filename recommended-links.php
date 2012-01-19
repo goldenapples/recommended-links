@@ -147,9 +147,6 @@ function gad_add_reclink( $reclink ) {
 	if ( $link_exists )
 		return false;
 
-	// See if any taxonomy terms were selected
-	$taxes = (isset( $reclinks['reclink_taxes'] ) ) ?
-		array_filter( $reclink['reclink_taxes'], 'empty_taxonomy' ) : null;
 
 	function empty_taxonomy( $t ) {
 		if ( is_array( $t ) ) {
@@ -164,9 +161,16 @@ function gad_add_reclink( $reclink ) {
 		'post_author' 	=> $current_user->ID,
 		'post_title' 	=> $reclink['reclink_title'],
 		'post_content'	=> $reclink['reclink_description'],
-		'post_status'	=> 'publish',
-		'tax_input'		=> $reclink['reclink_taxes']
+		'post_status'	=> 'publish'
 	) );
+
+	// Set any taxonomy terms that were selected
+	if ( isset( $reclink['reclink_taxes'] ) )
+		foreach ( $reclink['reclink_taxes'] as $tax => $terms ) {
+			$terms_array = array_map( 'intval', (array)$terms );
+			$test = wp_set_object_terms( $link_ID, $terms_array, $tax );
+			error_log( 'Setting terms on '.$link_ID.': '.print_r( $test ) );
+		}
 
 	update_post_meta( $link_ID, '_href', $reclink['reclink_url'] );
 
