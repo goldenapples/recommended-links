@@ -33,6 +33,25 @@ function gad_reclinks_sortby( $query ) {
 		$query->set( 'posts_per_page', $posts_per_page );
 	}
 
+	// if any taxonomies are enabled for recommended links post type (in plugin settings), they can be used to 
+	// filter archive pages. If a taxonomy term is passed in query string, use that to modify the query
+
+	if ( $taxonomies = $plugin_settings['tax'] ) {
+		$tax_query = array();
+		foreach ( $taxonomies as $tax => $on ) {
+			if ( isset( $_GET[ $tax ] ) )
+				$tax_query[] = array(
+					'taxonomy' 	=> $tax,
+					'terms'		=> (array)$_GET[ $tax ],
+					'field'		=> 'slug'
+				);
+		}
+		$query->set( 'tax_query', $tax_query );
+	}
+
+	// Sort order is determined by plugin defaults, and can be 
+	// overriden by query parameter "reclinks_sort" or query string argument "sort"
+	
 	$sort_order = ( isset( $plugin_settings['sort_order'] ) ) ? $plugin_settings['sort_order'] : 'current';
 
 	if ( isset( $_GET['sort'] ) && in_array(
@@ -90,12 +109,12 @@ function gad_reclinks_posts_fields( $fields ) {
 	return $fields;
 }
 
-function gad_reclinks_votes_join_hot() {
-	return gad_reclinks_votes_join( '1 DAY' );
+function gad_reclinks_votes_join_hot( $join ) {
+	return $join . gad_reclinks_votes_join( '1 DAY' );
 }
 
-function gad_reclinks_votes_join_current() {
-	return gad_reclinks_votes_join( '1 WEEK' );
+function gad_reclinks_votes_join_current( $join ) {
+	return $join . gad_reclinks_votes_join( '1 WEEK' );
 }
 
 function gad_reclinks_votes_join( $interval ) {
