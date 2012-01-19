@@ -4,7 +4,7 @@ Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
 Tested up to: 3.3.1
-Stable tag: 0.3.4
+Stable tag: 0.3.5
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
@@ -23,7 +23,7 @@ I will guarantee backwards compatibility with all data saved by the plugin, so i
 1. Any links added through this widget show up in the archive for the custom post type "Recommended Links". You can also create a new page and set that page to show your links on the plugin options page.
 1. If you have permalinks enabled, the archive will be displayed at `http://yoursite.tld/reclinks`; otherwise it will be at `http://yoursite.tld?post_type=reclink`. 
 1. The plugin tries to intelligently filter markup so that it can work with most themes out of the box. If the archive or single link display doesn't work in your theme, you may have to create an `archive-reclink.php` or `single-reclink.php` template file. _(See the FAQ for examples of markup for these template files)_.
-1. See the "Frequently Asked Questions for questions on customizing the output or styling the plugin.
+1. See the [plugin wiki](https://github.com/goldenapples/recommended-links/wiki) for troubleshooting and customization instructions.
 
 == Frequently Asked Questions ==
 
@@ -68,6 +68,10 @@ There are not many special display features yet. A partial listing:
 
 == Changelog ==
 
+= 0.3.5 =
+
+I fixed term archives so that your recommended links archive page can be sorted by term; if you have categories enabled for links, try adding `?category=yourcategoryname` to the URL for your archive page. Also fixed issue with adding non-hierarchical taxonomies to reclinks, and fixed the loop on archive pages (reset the query after the recommended loops link) so that it doesn't mess up any secondary loops on the page.
+
 = 0.3.4 =
 
 I broke posting of new links in the last update... this is just a quick fix to correct that. More changes to come soon.
@@ -111,6 +115,10 @@ I built a version 0.1 back in 2010 for a personal project, which was only half c
 
 
 == Upgrade Notice ==
+
+= 0.3.5 =
+
+Fixed term archive pages; also fixed the loop on archive pages so it doesn't mess up any secondary loops on the page.
 
 = 0.3.4 =
 
