@@ -146,7 +146,19 @@ function gad_add_reclink( $reclink ) {
 	) );
 	if ( $link_exists )
 		return false;
-	
+
+	// See if any taxonomy terms were selected
+	$taxes = (isset( $reclinks['reclink_taxes'] ) ) ?
+		array_filter( $reclink['reclink_taxes'], 'empty_taxonomy' ) : null;
+
+	function empty_taxonomy( $t ) {
+		if ( is_array( $t ) ) {
+			$t = array_filter( $t );
+			return ( !empty( $t ) );
+		}		
+		else return ( $t );
+	}
+
 	$link_ID = wp_insert_post( array(
 		'post_type' 	=> 'reclink',
 		'post_author' 	=> $current_user->ID,

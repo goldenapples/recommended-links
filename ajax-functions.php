@@ -84,6 +84,7 @@ function gad_reclinks_ajax_vote() {
 
 }
 
+// Not currently used; but here in case the YQL solution proves too clow, or unreliable
 add_action( 'wp_ajax_check_reclink_title', 'gad_reclinks_check_link_title' );
 add_action( 'wp_ajax_nopriv_check_reclink_title', 'gad_reclinks_check_link_title' );
 

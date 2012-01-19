@@ -215,7 +215,10 @@ function gad_reclinks_page( $content ) {
 	if ( !$plugin_settings['page_for_reclinks'] || !is_page( $plugin_settings['page_for_reclinks'] ) )
 		return $content;	
 
-	global $wp_query;
+	global $wp_the_query, $wp_query;
+
+	if ( $wp_query !== $wp_the_query )
+		return $content;
 
 	$links_paged = ( isset( $wp_query->query_vars['paged'] ) ) ? $wp_query->query_vars['paged'] : 1;
 	$posts_per_page = ( isset( $plugin_settings['posts_per_page'] ) ) ? $plugin_settings['posts_per_page'] : 25;
@@ -251,6 +254,8 @@ function gad_reclinks_page( $content ) {
 	$links_archive = ob_get_clean();
 
 	$wp_query = $old_query;
+	wp_reset_query();
+
 	return $content . $links_archive . $links_navigation;
 
 }
