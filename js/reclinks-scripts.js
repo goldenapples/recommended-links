@@ -44,7 +44,7 @@
       $.ajax('http://query.yahooapis.com/v1/public/yql', {
         type: 'get',
         data: {
-          q: "use 'http://www.datatables.org/data/htmlstring.xml' as htmlstring; select * from htmlstring where url='" + linkUrl + "'",
+          q: "select * from html where url='" + linkUrl + "' and xpath='/html/head/title|/html/head/link[@rel=\"icon\"]|/html/head/link[@rel=\"shortcut icon\"]'",
           format: 'json'
         },
         dataType: 'json',
@@ -55,7 +55,7 @@
             alert(reclinks.messages_error404);
             return false;
           }
-          title = response.result.match(/<\s*title\s*>([^<]*)<\/title>/)[1];
+          title = response.title;
           if (!title) {
             alert(reclinks.messages_errorNoTitle);
             return false;
