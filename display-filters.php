@@ -54,15 +54,15 @@ function gad_reclinks_sortby( $query ) {
 	
 	$sort_order = ( isset( $plugin_settings['sort_order'] ) ) ? $plugin_settings['sort_order'] : 'current';
 
-	if ( isset( $_GET['sort'] ) && in_array(
-			$_GET['sort'], 
-			array( 'newest', 'hot', 'current', 'score' ) ) )
-		$sort_order = $_GET['sort'];
-
 	if ( isset( $query->query_vars['reclinks_sort'] ) && in_array(
 			$query->query_vars['reclinks_sort'], 
 			array( 'newest', 'hot', 'current', 'score' ) ) )
 		$sort_order = $query->query_vars['reclinks_sort'];
+
+	if ( isset( $_GET['sort'] ) && in_array(
+			$_GET['sort'], 
+			array( 'newest', 'hot', 'current', 'score' ) ) )
+		$sort_order = $_GET['sort'];
 
 	switch ( $sort_order ) :
 		case 'score':

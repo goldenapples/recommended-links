@@ -149,3 +149,40 @@ function reclink_terms( $before = '<span class="terms-%s">[', $sep = ', ', $afte
 		}
 	}
 }
+
+/**
+ * Shortcode to display buttons for different sort options
+ *
+ * Usage: 	[reclink_sort_options] 
+ * 				to show buttons for all four sorting options, with default text
+ *			[reclink_sort_options show="newest,current,score" score="All time best"]
+ *				will show only buttons for newest, current, and score, and will use
+ *				"All time best" as the text for the "score" button rather than "Top Score"
+ */
+add_shortcode( 'reclink_sort_options', 'reclink_sort_options' );
+
+function reclink_sort_options( $args = null ) {
+	$defaults = array(
+		'base_url'	=> false,
+		'show' 		=> 'hot,current,newest,score',
+		'hot' 		=> __( 'Hot', 'reclinks' ),
+		'current' 	=> __( 'Current', 'reclinks' ),
+		'newest' 	=> __( 'Newest', 'reclinks' ),
+		'score' 	=> __( 'Top Score', 'reclinks' )
+	);
+	$args = wp_parse_args( $args, $defaults );
+	$links = explode( ',' , $args['show'] );
+	
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+	$archive_page = ( isset( $plugin_settings['page_for_reclinks'] ) ) ?
+		get_permalink( $plugin_settings['page_for_reclinks'] ) : get_post_type_archive_link( 'reclink' );
+	if ( $args['base_url'] ) 
+		$archive_page= $args['base_url'];
+
+	$return = '<form class="reclinks-sort-options" action="'.$archive_page.'" method="get" >';
+	foreach ( $links as $link )
+		$return .= '<button class="reclinks-sort reclinks-sort-'.$link.'" name="sort" value="'.$link.'">'.$args[$link].'</button>';
+	$return .= '</form>';
+
+	return $return;
+}
