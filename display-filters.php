@@ -217,6 +217,15 @@ function reclinks_domain( $echo = true, $before = '(', $after = ')' ) {
 		return $before . $host . $after;
 }
 
+function reclinks_favicon( $echo = true ) {
+	$domain = reclinks_domain( false, '', '' );
+	if ( empty( $domain ) ) return false;
+	$favicon = '<img class="reclink-favicon" src="http://www.google.com/s2/favicons?domain='.$domain.'" alt="'.$domain.'">';
+	if ( $echo )
+		echo $favicon;
+	else
+		return $favicon;
+}
 
 /**
  * A "pseudo-loop" for the page designated as "Page for Recommended Links Archive"
@@ -278,3 +287,4 @@ function gad_reclinks_page( $content ) {
 	return $content . $links_archive . $links_navigation;
 
 }
+

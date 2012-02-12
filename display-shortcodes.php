@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * @function	output_addlink_form
+ *
+ * Outputs or returns html markup for the "Add Link" form.
+ * Called by the shortcode `reclink_addform` as well as by the Add Link widget,
+ * and can be called directly by theme or bookmarklet.
+ *
+ * @param	bool	Whether to echo (true) or return (false).
+ *
+ */
 add_shortcode( 'reclink_addform', 'output_addlink_form' );
 
 function output_addlink_form( $echo = false ) {
@@ -35,6 +45,32 @@ function output_addlink_form( $echo = false ) {
 	$output = ob_get_contents();
 	ob_end_clean();
 	if ( $echo === true ) echo $output; else return $output;
+}
+
+
+/**
+ * @function	reclinks_bookmarklet
+ *
+ * Displays a button for the Add Link bookmarklet and outputs the javascript 
+ * necessary for the bookmarklet.
+ *
+ * Based loosely on the internals of the Press This bookmarklet, but all of the work
+ * is done front-end so there's no need to load admin scripts, etc.
+ *
+ * @param	bool	true: echoes bookmarklet, false: returns it.
+ */
+
+function reclinks_bookmarklet( $echo = false ) {
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+	$submit_link_url = add_query_arg( array( 'action' => 'submitlink' ), home_url() );
+	$button_text = isset ( $plugin_settings['button-text'] ) ? $plugin_settings['button-text'] : 'bookmarklet';
+	$button_class = 'reclinks_bookmarklet';
+	if ( !empty( $plugin_settings['button-class'] ) ) $button_class .= " " . trim( $plugin_settings['button-class'] );
+	$button = <<<HTML
+<a class="{$button_class}" onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.reclinks-bookmarklet-code').show().find('textarea').focus().select();return false;" href="javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,s=(e?e():(k)?k():(x?x.createRange().text:0)),f='{$submit_link_url}',l=d.location,e=encodeURIComponent,u=f+'&u='+e(l.href)+'&amp;t='+e(d.title)+'&amp;s='+e(s)+'&amp;v=4';a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=570'))l.href=u;};if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();void(0)"><span>$button_text</span></a>
+HTML;
+	if ( $echo ) echo $button;
+	else return $button;
 }
 
 

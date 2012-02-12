@@ -169,5 +169,73 @@ function gad_reclinks_widgets() {
 		}
 
 	register_widget('RecLinks_Display_Links');
+
+
+	/*
+	 * Widget for displaying bookmarklet button.
+	 *
+	 * ALso includes textarea where site owners can include description
+	 * and instructions, etc.
+	 *
+	 */
+	class RecLinks_Bookmarklet extends WP_Widget {
+
+		function RecLinks_Bookmarklet() {
+		//Constructor
+			$widget_ops = array(
+				'classname' => 'widget_reclinks_bookmarklet',
+				'description' => 'Display a bookmarklet that your users can drag to their address bar'
+			);
+			$this->WP_Widget('reclinks_bookmarklet', 'RecLinks Bookmarklet Form', $widget_ops);
+		}
+
+		function widget($args, $instance) {
+		// prints the widget
+			if ( !current_user_can('add_reclink') )
+				return;
+			extract($args, EXTR_SKIP);
+			echo $before_widget;
+			$title = empty($instance['title']) ? ' ' : apply_filters('widget_title', $instance['title']);
+			$entry_title = empty($instance['entry_title']) ? ' ' : apply_filters('widget_entry_title', $instance['entry_title']);
+			if ( !empty( $title ) ) 
+				echo $before_title . $title . $after_title;
+
+			echo reclinks_bookmarklet();
+
+			if ( !empty( $description ) )
+				echo '<p>' . $description . '</p>';
+
+			echo $after_widget;
+		}
+
+		function update($new_instance, $old_instance) {
+			//save the widget
+			$instance = $old_instance;
+			$instance['title'] = sanitize_text_field($new_instance['title']);
+			$instance['description'] = wp_filter_post_kses($new_instance['description']);
+			return $instance;
+		}
+
+		function form($instance) {
+			//widgetform in backend
+			$instance = wp_parse_args( 
+				(array) $instance, 
+				array( 'title' => '' ) );
+				$title = strip_tags($instance['title']);
+				?>
+				<p>
+					<label for="<?php echo $this->get_field_id('title'); ?>">Title: </label>
+					<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
+				</p>
+				<p>					
+					<label for="<?php echo $this->get_field_id('description'); ?>">Description: </label>
+					<textarea id="<?php echo $this->get_field_id('description'); ?>" name="<?php echo $this->get_field_name('description'); ?>" rows="10" cols="30"><?php echo esc_textarea( $description ); ?></textarea>
+					<span class="description">(Give your users an idea of how to use the bookmarklet, or instructions, etc.)</span>
+				</p>
+				<?php
+				}
+		}
+
+	register_widget( 'RecLinks_Bookmarklet' );
 }
 

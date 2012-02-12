@@ -169,7 +169,7 @@ function gad_add_reclink( $reclink ) {
 		foreach ( $reclink['reclink_taxes'] as $tax => $terms ) {
 			$terms_array = array_map( 'intval', (array)$terms );
 			$test = wp_set_object_terms( $link_ID, $terms_array, $tax );
-			error_log( 'Setting terms on '.$link_ID.': '.print_r( $test ) );
+//			error_log( 'Setting terms on '.$link_ID.': '.print_r( $test ) );
 		}
 
 	update_post_meta( $link_ID, '_href', $reclink['reclink_url'] );

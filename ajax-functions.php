@@ -39,6 +39,12 @@ function reclink_frontend_entries() {
 		$votesuccess = gad_add_reclink_vote( $_POST['reclink'], $comment, $vote, $current_user->ID, $_SERVER['REMOTE_ADDR'] );
 	}
 
+	if ( 'submitlink' === $_GET['action'] ) {
+		add_filter( 'show_admin_bar', '__return_false' );
+		reclinks_bookmarklet_request();
+		exit;
+	}
+
 }
 
 
@@ -84,7 +90,7 @@ function gad_reclinks_ajax_vote() {
 
 }
 
-// Not currently used; but here in case the YQL solution proves too clow, or unreliable
+// Not currently used; but here in case the YQL solution proves too slow, or unreliable
 add_action( 'wp_ajax_check_reclink_title', 'gad_reclinks_check_link_title' );
 add_action( 'wp_ajax_nopriv_check_reclink_title', 'gad_reclinks_check_link_title' );
 
@@ -104,5 +110,49 @@ function gad_reclinks_check_link_title() {
 	}
 	die( json_encode( $return ) );
 
+}
 
+
+/**
+ * On template redirect, checks for the presence of the "action=submitlink" query
+ * arg (IE, a request originating from the bookmarklet), and, if present, skips the
+ * usual template hierarchy and only displays the "Add Link" form.
+ * 
+ */
+
+
+function reclinks_bookmarklet_request() {
+
+	define( 'IFRAME_REQUEST', true );
+	header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
+
+	if ( ! current_user_can('edit_posts') )
+		wp_die( __( 'Cheatin&#8217; uh?' ) );
+?>
+<html>
+	<head>
+		<title><?php wp_title('Submit Recommended Link'); ?></title>
+		<?php wp_head(); ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_uri(); ?>" />
+		<script type="text/javascript">
+			jQuery(document).ready(function($){
+				reclink = {
+					url: '<?php echo $_GET['u']; ?>',
+					title: '<?php echo $_GET['t']; ?>',
+					description: '<?php echo $_GET['s']; ?>'
+				}
+				$('#reclink_URL').val(reclink.url);
+				$('#reclink_title').val(reclink.title);
+				$('#reclink_description').val(reclink.description);
+			});
+		</script>
+	</head>
+	<body>
+		<div class="widget widget_addLink_form">
+			<?php output_addlink_form( true ); ?>
+		</div>
+	</body>
+</html>
+<?php
+	die(0);
 }
