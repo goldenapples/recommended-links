@@ -17,16 +17,23 @@ function output_addlink_form( $echo = false ) {
 	ob_start();
 ?>
 	<form class="reclinks_addlink" action="<?php echo add_query_arg( 'action', 'reclink-add' ); ?>" method="POST">
-		<label for="reclink_URL"><?php _e('Link URL', 'gad_reclinks'); ?></label>
-		<input type="text" name="reclink_URL" id="reclink_URL" />
-		<label for="reclink_title"><?php _e('Link Title', 'gad_reclinks'); ?></label>
-		<input type="text" name="reclink_title" id="reclink_title" />
-		<label for="reclink_description"><?php _e('Link Description', 'gad_reclinks'); ?></label>
-		<textarea id="reclink_description" name="reclink_description" rows="10" cols="30" ></textarea>
+		<div class="reclink_form_field">
+			<label for="reclink_URL"><?php _e('Link URL', 'gad_reclinks'); ?></label>
+			<input type="text" name="reclink_URL" id="reclink_URL" />
+		</div>
+		<div class="reclink_form_field">
+			<label for="reclink_title"><?php _e('Link Title', 'gad_reclinks'); ?></label>
+			<input type="text" name="reclink_title" id="reclink_title" />
+		</div>
+		<div class="reclink_form_field">
+			<label for="reclink_description"><?php _e('Link Description', 'gad_reclinks'); ?></label>
+			<textarea id="reclink_description" name="reclink_description" rows="10" cols="30" ></textarea>
+		</div>
 <?php if ( isset( $plugin_settings['tax'] ) && is_array( $plugin_settings['tax'] ) ) {
 	foreach ( $plugin_settings['tax'] as $tax => $on ) {
 		$t = get_taxonomy( $tax );
-		echo '<p><label for="reclink_taxes['.$tax.']">'.$t->labels->name.'</label>';
+		echo '<div class="reclink_form_field">';
+		echo '<label for="reclink_taxes['.$tax.']">'.$t->labels->name.'</label>';
 		wp_dropdown_categories( 
 			array( 
 				'taxonomy' => $tax,
@@ -36,7 +43,7 @@ function output_addlink_form( $echo = false ) {
 			    'hide_empty' => 0
 			)
 		);	
-		echo '</p>';
+		echo '</div>';
 	}
 } ?>
 		<p><button type="submit" id="reclink_submit"><?php _e( 'Submit Link', 'gad_reclinks' ); ?></button></p>
@@ -60,10 +67,12 @@ function output_addlink_form( $echo = false ) {
  * @param	bool	true: echoes bookmarklet, false: returns it.
  */
 
+add_shortcode( 'reclinks_bookmarklet', 'reclinks_bookmarklet' );
+
 function reclinks_bookmarklet( $echo = false ) {
 	$plugin_settings = get_option( 'reclinks_plugin_options' );
 	$submit_link_url = add_query_arg( array( 'action' => 'submitlink' ), home_url() );
-	$button_text = isset ( $plugin_settings['button-text'] ) ? $plugin_settings['button-text'] : 'bookmarklet';
+	$button_text = isset ( $plugin_settings['button-text'] ) ? $plugin_settings['button-text'] : get_bloginfo('title') .' bookmarklet';
 	$button_class = 'reclinks_bookmarklet';
 	if ( !empty( $plugin_settings['button-class'] ) ) $button_class .= " " . trim( $plugin_settings['button-class'] );
 	$button = <<<HTML

@@ -38,6 +38,10 @@ function reclinks_custom_login_message() {
 		$message = '<p class="message">'.__( 'You must be logged in to vote.', 'gad_reclinks' ) .'</p>';
 		return $message;
 	}
+	if ( 'bookmarklets-login' === $_GET['msg'] ) {
+		$message = '<p class="message">'.__( 'Please <b>log in</b> to submit this link.', 'gad_reclinks' ) . '</p>';
+		return $message;
+	}
 }
 
 add_action( 'reclink_add_vote', 'update_author_karma', 10, 2);

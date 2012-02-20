@@ -24,9 +24,10 @@ $start =  ( $wp_query->query_vars['paged'] ) ?
 	<ol start="<?php echo $start; ?>">
 	<?php while ( have_posts() ) : the_post(); ?>
 		<li>
+			<?php reclinks_favicon(); ?>
 			<?php reclink_terms(); ?>
 			<strong><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></strong> 
-			<small><?php reclinks_domain(); ?><small>
+<!--		<small><?php reclinks_domain(); ?><small>  -->
 			<br /><?php reclinks_votebox(); ?>
 		</li>
 	<?php endwhile; ?>

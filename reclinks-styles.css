@@ -27,3 +27,5 @@ button.votelink {
 .votelink.votelink-plus.current-vote { background-position: -14px -14px; }
 .votelink.votelink-minus:hover { background-position: -28px -14px; }
 .votelink.votelink-plus:hover { background-position: -42px -14px; }
+
+.reclink-favicon { vertical-align: middle; }

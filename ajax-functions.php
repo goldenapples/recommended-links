@@ -124,10 +124,17 @@ function gad_reclinks_check_link_title() {
 function reclinks_bookmarklet_request() {
 
 	define( 'IFRAME_REQUEST', true );
-	header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
-	if ( ! current_user_can('edit_posts') )
-		wp_die( __( 'Cheatin&#8217; uh?' ) );
+	if ( !is_user_logged_in() ) {
+		$current_request = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING'];
+		wp_redirect( add_query_arg( 
+			array( 'msg' => 'bookmarklets-login' ),
+			wp_login_url( $current_request ) )
+		);
+		exit;
+	}
+	
+	header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 ?>
 <html>
 	<head>
