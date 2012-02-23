@@ -82,3 +82,12 @@
 			</p>
 		</td>
 	</tr>
+	<tr>
+		<th></th>
+		<td>
+			<?php wp_nonce_field( 'gad-reclinks-settings' ); ?>
+			<p>
+				<input type="submit" class="button-primary" value="Save changes"/>
+			</p>
+		</td>
+	</tr>

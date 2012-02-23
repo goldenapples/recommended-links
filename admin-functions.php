@@ -21,7 +21,7 @@ function reclinks_plugin_settings() {
 	$current_settings = get_option( 'reclinks_plugin_options' );
 ?>
 	<div class="wrap">
-<h2><?php _e( 'Recommended Links Plugin Settings', 'gad_reclinks' ); ?></h2>
+<h2><?php _e( 'Recommended Links Plugin Settings', 'reclinks' ); ?></h2>
 
 <div id="icon-themes" class="icon32"><br /></div>
 <h3 class="nav-tab-wrapper">
@@ -38,15 +38,6 @@ function reclinks_plugin_settings() {
 		<form method="post">
 			<table class="form-table">
 			<?php require( "admin/options-$page.php" ); ?>
-				<tr>
-					<th></th>
-					<td>
-						<?php wp_nonce_field( 'gad-reclinks-settings' ); ?>
-						<p>
-							<input type="submit" class="button-primary" value="Save changes"/>
-						</p>
-					</td>
-				</tr>
 			</table>
 		</form>
 	<?php } ?>
@@ -55,26 +46,36 @@ function reclinks_plugin_settings() {
 <?php
 }
 
-function update_reclinks_settings() {
+function update_reclinks_settings( $page ) {
 
-	// needs sanitization and whitelisting, of course
-	// this is just bare minimum
-	update_option( 'reclinks_plugin_options', 
-		array(
-			'page_for_reclinks' => intval( $_POST['page_id'] ),
-			'sort_order' => $_POST['sort_order'],
-			'tax' => ( isset( $_POST['tax'] ) ) ? $_POST['tax'] : array(),
-			'allow-unregistered-vote' => (isset($_POST['allow-unregistered-vote']) && true == $_POST['allow-unregistered-vote']),
-			'allow-unregistered-post' => (isset($_POST['allow-unregistered-post']) && true == $_POST['allow-unregistered-post']),
-			'vote-on-comments' => (isset($_POST['vote-on-comments']) && true == $_POST['vote-on-comments']),
+	$settings = get_option( 'reclinks_plugin_options' );
+
+	switch ( $page ) :
+		case 'general':
+			$settings['page_for_reclinks'] = intval( $_POST['page_id'] );
+			$settings['sort_order'] = $_POST['sort_order'];
+			$settings['tax'] = ( isset( $_POST['tax'] ) ) ? $_POST['tax'] : array();
+			$settings['allow-unregistered-vote'] = (isset($_POST['allow-unregistered-vote']) && true == $_POST['allow-unregistered-vote']);
+			$settings['allow-unregistered-post'] = (isset($_POST['allow-unregistered-post']) && true == $_POST['allow-unregistered-post']);
+			$settings['vote-on-comments'] = (isset($_POST['vote-on-comments']) && true == $_POST['vote-on-comments']);
 
 			// no UI for this yet, but its gotta be in there
-			'vote-values' => array(
+			$settings['vote-values'] = array(
 				'minus' => array( 'value' => -1, 'text' => '-' ),
 				'plus' => array( 'value' => 1, 'text' => '+' )
-			),
-		)
-	);
+			);
+			break;
+		case 'bookmarklet':
+			$settings['bookmarklet_text'] = sanitize_text_field( $_POST['bookmarklet_text'] );
+			$settings['bookmarklet_class'] = sanitize_text_field( $_POST['bookmarklet_class'] );
+			$settings['bookmarklet_header'] = wp_kses_post( $_POST['bookmarklet_header'] );
+			break;
+		default:
+			break;
+	endswitch;
+
+	update_option( 'reclinks_plugin_options', $settings );
+
 	echo '<div id="message" class="messages updated"><p>Plugin settings updated!</p></div>';
 }
 

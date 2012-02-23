@@ -57,11 +57,12 @@ function reclinks_install() {
  **/
 function reclinks_db_option_upgrade( $from ) {
 
-	if ( $from === 4 ) return;
+	if ( $from === 5 ) return;
 
 	$old_settings = ( $from ) ? get_option( 'reclinks_plugin_options' ) : array();
 
-	/* DB version 4, reflects plugin version 0.4. Includes 'vote-on-comments' settings. */
+	/* DB version 5, reflects plugin version 0.4early. Introduces bookmarklet settings options.
+	/* DB version 4, reflects plugin version 0.4early. Includes 'vote-on-comments' settings. */
 	/* DB version 3, reflects plugin version 0.3. Includes 'tax' string. */
 	$reclinks_plugin_defaults = array(
 		'vote-values' => array(
@@ -73,13 +74,16 @@ function reclinks_db_option_upgrade( $from ) {
 		'allow-unregistered-vote' => false,
 		'allow-unregistered-post' => false,
 		'vote-on-comments' => true,
-		'tax' => array()
+		'tax' => array(),
+		'bookmarklet_text' => sprintf( __( 'Post to %s', 'reclinks' ), get_option( 'blogname' ) ),
+		'bookmarklet_class' => 'reclinks-bookmarklet',
+		'bookmarklet_header' => ''
 	);
 
 	$options_to_set = wp_parse_args( $old_settings, $reclinks_plugin_defaults );
 
 	update_option( 'reclinks_plugin_options', $options_to_set );
-	update_option( 'reclinks_db_version', 4 );
+	update_option( 'reclinks_db_version', 5 );
 
 }
 
