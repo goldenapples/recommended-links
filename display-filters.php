@@ -56,12 +56,12 @@ function gad_reclinks_sortby( $query ) {
 
 	if ( isset( $query->query_vars['reclinks_sort'] ) && in_array(
 			$query->query_vars['reclinks_sort'], 
-			array( 'newest', 'hot', 'current', 'score' ) ) )
+			array( 'newest', 'hot', 'current', 'score', 'controversial' ) ) )
 		$sort_order = $query->query_vars['reclinks_sort'];
 
 	if ( isset( $_GET['sort'] ) && in_array(
 			$_GET['sort'], 
-			array( 'newest', 'hot', 'current', 'score' ) ) )
+			array( 'newest', 'hot', 'current', 'score', 'controversial' ) ) )
 		$sort_order = $_GET['sort'];
 
 	switch ( $sort_order ) :
@@ -81,6 +81,13 @@ function gad_reclinks_sortby( $query ) {
 		case 'hot':
 			add_filter( 'posts_fields', 'gad_reclinks_posts_fields' );
 			add_filter( 'posts_join', 'gad_reclinks_votes_join_hot' );
+			add_filter( 'posts_groupby', 'gad_reclinks_groupby' );
+			add_filter( 'posts_orderby', 'gad_reclinks_orderby' );
+			add_action( 'the_posts', 'gad_remove_custom_filters' );
+			break;
+		case 'controversial':
+			add_filter( 'posts_fields', 'gad_reclinks_posts_fields_absval' );
+			add_filter( 'posts_join', 'gad_reclinks_votes_join_current' );
 			add_filter( 'posts_groupby', 'gad_reclinks_groupby' );
 			add_filter( 'posts_orderby', 'gad_reclinks_orderby' );
 			add_action( 'the_posts', 'gad_remove_custom_filters' );
@@ -106,6 +113,12 @@ function gad_remove_custom_filters( $posts ) {
 function gad_reclinks_posts_fields( $fields ) {
 	global $wpdb;
 	$fields = str_replace( "{$wpdb->posts}.*", "{$wpdb->posts}.*, SUM( {$wpdb->reclinkvotes}.vote ) AS post_vote ", $fields );
+	return $fields;
+}
+
+function gad_reclinks_posts_fields_absval( $fields ) {
+	global $wpdb;
+	$fields = str_replace( "{$wpdb->posts}.*", "{$wpdb->posts}.*, SUM( ABS( {$wpdb->reclinkvotes}.vote ) ) AS post_vote ", $fields );
 	return $fields;
 }
 

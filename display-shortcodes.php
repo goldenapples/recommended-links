@@ -67,7 +67,7 @@ function output_addlink_form( $echo = false ) {
  * @param	bool	true: echoes bookmarklet, false: returns it.
  */
 
-add_shortcode( 'reclinks_bookmarklet', 'reclinks_bookmarklet' );
+add_shortcode( 'reclink_bookmarklet', 'reclinks_bookmarklet' );
 
 function reclinks_bookmarklet( $echo = false ) {
 	$plugin_settings = get_option( 'reclinks_plugin_options' );
@@ -210,12 +210,13 @@ add_shortcode( 'reclink_sort_options', 'reclink_sort_options' );
 
 function reclink_sort_options( $args = null ) {
 	$defaults = array(
-		'base_url'	=> false,
-		'show' 		=> 'hot,current,newest,score',
-		'hot' 		=> __( 'Hot', 'reclinks' ),
-		'current' 	=> __( 'Current', 'reclinks' ),
-		'newest' 	=> __( 'Newest', 'reclinks' ),
-		'score' 	=> __( 'Top Score', 'reclinks' )
+		'base_url'		=> false,
+		'show' 			=> 'hot,current,newest,controversial,score',
+		'hot' 			=> __( 'Hot', 'reclinks' ),
+		'current' 		=> __( 'Current', 'reclinks' ),
+		'newest' 		=> __( 'Newest', 'reclinks' ),
+		'controversial' => __( 'Controversial', 'reclinks' ),
+		'score' 		=> __( 'Top Score', 'reclinks' )
 	);
 	$args = wp_parse_args( $args, $defaults );
 	$links = explode( ',' , $args['show'] );

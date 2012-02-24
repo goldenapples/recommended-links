@@ -127,3 +127,29 @@ function votescore_column_orderby( $vars ) {
  
 	return $vars;
 }
+
+/**
+ * Added meta boxes for edit-post?post_type=reclink screen
+ *
+ */
+function reclinks_edit_screen_metaboxes() {
+	add_meta_box( 'reclinkurl', __( 'Link URL', 'reclinks'), 'reclinks_URL_metabox', 'reclink', 'normal', 'core' );
+}
+
+function reclinks_URL_metabox() {
+	global $post;
+	$href = get_post_meta( $post->ID, '_href', true );
+	wp_nonce_field( plugin_basename( __FILE__ ), 'myplugin_noncename' );
+	echo '<input name="_href" type="url" class="regular-text" style="width: 98%" value="'.$href.'">';
+}
+
+add_action( 'save_post', 'save_edited_reclink_href' );
+
+function save_edited_reclink_href( $post_ID ) {
+	if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
+		return;
+
+	if ( 'reclink' === $_POST['post_type'] )
+		update_post_meta( $post_ID, '_href', $_POST['_href'] );
+
+}
