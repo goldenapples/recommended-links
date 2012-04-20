@@ -149,7 +149,7 @@ function save_edited_reclink_href( $post_ID ) {
 	if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
 		return;
 
-	if ( 'reclink' === $_POST['post_type'] )
+	if ( isset( $_POST['post_type'] ) && 'reclink' === $_POST['post_type'] )
 		update_post_meta( $post_ID, '_href', $_POST['_href'] );
 
 }

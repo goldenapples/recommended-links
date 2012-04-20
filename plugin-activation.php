@@ -1,9 +1,58 @@
 <?php
 
 /**
- * @function	reclinks_install()
+ * An all-purpose upgrade/install handler for this plugin.
  *
- * Runs on initial plugin activation. Checks for existence of tables from previous
+ * Handles creating new options when upgrading from one version of the plugin to the next.
+ *
+ * @uses	reclinks_install	If $from is false, calls reclinks_install() to create initial
+ * 								database tables
+ *
+ * @param	int|false			the db version being upgraded from
+ * 								// ie get_option( 'reclinks_db_version' )
+ *
+ **/
+function reclinks_db_option_upgrade( $from ) {
+
+	$current_version = 5;
+
+	if ( $from === $current_version ) return;
+
+	if ( $from === false )
+		reclinks_install();
+
+
+	$old_settings = ( $from ) ? get_option( 'reclinks_plugin_options' ) : array();
+
+	/* DB version 5, reflects plugin version 0.4early. Introduces bookmarklet settings options.
+	/* DB version 4, reflects plugin version 0.4early. Includes 'vote-on-comments' settings. */
+	/* DB version 3, reflects plugin version 0.3. Includes 'tax' string. */
+	$reclinks_plugin_defaults = array(
+		'vote-values' => array(
+			'minus' => array( 'value' => -1, 'text' => '-' ),
+			'plus' => array( 'value' => 1, 'text' => '+' )
+		),
+		'page_for_reclinks' => false,
+		'sort_order' => 'current',
+		'allow-unregistered-vote' => false,
+		'allow-unregistered-post' => false,
+		'vote-on-comments' => true,
+		'tax' => array(),
+		'bookmarklet_text' => sprintf( __( 'Post to %s', 'reclinks' ), get_option( 'blogname' ) ),
+		'bookmarklet_class' => 'reclinks-bookmarklet',
+		'bookmarklet_header' => ''
+	);
+
+	$options_to_set = wp_parse_args( $old_settings, $reclinks_plugin_defaults );
+
+	update_option( 'reclinks_plugin_options', $options_to_set );
+	update_option( 'reclinks_db_version', 5 );
+
+}
+
+
+/**
+ * Should run on initial plugin activation. Checks for existence of tables from previous
  * version of plugin, and if present, imports all old link and vote entries into new 
  * custom post type and comments. Also should set default options for the plugin, if 
  * they have not been set.
@@ -38,52 +87,6 @@ function reclinks_install() {
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 	}
-
-	// Create default options in database settings
-	$v = get_option( 'reclinks_db_version' );
-	reclinks_db_option_upgrade( $v );
-
-}
-
-
-/**
- * Create default options settings.
- *
- * Handles creating new options when upgrading from one version of the plugin to the next.
- *
- * @param	int		the db version being upgraded from
- * 					// ie get_option( 'reclinks_db_version' )
- *
- **/
-function reclinks_db_option_upgrade( $from ) {
-
-	if ( $from === 5 ) return;
-
-	$old_settings = ( $from ) ? get_option( 'reclinks_plugin_options' ) : array();
-
-	/* DB version 5, reflects plugin version 0.4early. Introduces bookmarklet settings options.
-	/* DB version 4, reflects plugin version 0.4early. Includes 'vote-on-comments' settings. */
-	/* DB version 3, reflects plugin version 0.3. Includes 'tax' string. */
-	$reclinks_plugin_defaults = array(
-		'vote-values' => array(
-			'minus' => array( 'value' => -1, 'text' => '-' ),
-			'plus' => array( 'value' => 1, 'text' => '+' )
-		),
-		'page_for_reclinks' => false,
-		'sort_order' => 'current',
-		'allow-unregistered-vote' => false,
-		'allow-unregistered-post' => false,
-		'vote-on-comments' => true,
-		'tax' => array(),
-		'bookmarklet_text' => sprintf( __( 'Post to %s', 'reclinks' ), get_option( 'blogname' ) ),
-		'bookmarklet_class' => 'reclinks-bookmarklet',
-		'bookmarklet_header' => ''
-	);
-
-	$options_to_set = wp_parse_args( $old_settings, $reclinks_plugin_defaults );
-
-	update_option( 'reclinks_plugin_options', $options_to_set );
-	update_option( 'reclinks_db_version', 5 );
 
 }
 
@@ -154,6 +157,7 @@ function reclinks_import_old_links() {
 	// Delete old tables
 	$wpdb->query( "DROP TABLE IF EXISTS $reclinks_old_votes_table" );
 	$wpdb->query( "DROP TABLE IF EXISTS $reclinks_old_table;" );
+
 }
 
 /**

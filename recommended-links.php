@@ -81,17 +81,14 @@ function register_cpt_reclink() {
 }
 
 // Activation / deactivation
-include_once( plugin_dir_path( __FILE__ ) . 'plugin-activation.php' );
-register_activation_hook( __FILE__, 'reclinks_install' );
-register_deactivation_hook( __FILE__, 'reclinks_uninstall');
-
-
 add_action( 'admin_init', 'gad_check_db_tables' );
 
 function gad_check_db_tables() {
 	$v = get_option( 'reclinks_db_version' );
-	if ( !$v || $v < 5 )
-		reclinks_db_option_upgrade( $v );
+	if ( !$v || $v < 5 ) {
+			include_once( plugin_dir_path( __FILE__ ) . 'plugin-activation.php' );
+			reclinks_db_option_upgrade( $v );
+	}
 }
 
 
