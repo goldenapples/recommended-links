@@ -256,22 +256,25 @@ function gad_reclinks_page( $content ) {
 	if ( !$plugin_settings['page_for_reclinks'] || !is_page( $plugin_settings['page_for_reclinks'] ) )
 		return $content;	
 
-	global $wp_the_query, $wp_query;
+	global $wp_the_query, $wp_query, $paged;
 
 	if ( $wp_query !== $wp_the_query )
 		return $content;
 
-	$links_paged = ( isset( $wp_query->query_vars['paged'] ) ) ? $wp_query->query_vars['paged'] : 1;
+	$links_paged = ( isset( $wp_query->query['paged'] ) ) ? $wp_query->query['paged'] : 1;
 	$posts_per_page = ( isset( $plugin_settings['posts_per_page'] ) ) ? $plugin_settings['posts_per_page'] : 25;
 
+	// Backup old query, so it doesn't throw off conditionals elsewhere
 	$old_query = $wp_query;
+	$old_paged = $paged;
+
 	$wp_query = new WP_Query( array(
 		'post_type' => 'reclink',
 		'reclinks_sort' => $plugin_settings['sort_order'],
 		'posts_per_page' => $posts_per_page,
 		'paged' => $links_paged
 	) );
-
+	$paged = $links_paged;
 
 	/*
 	 * Basic structure for prev/next links,
@@ -281,10 +284,10 @@ function gad_reclinks_page( $content ) {
 
 	$links_navigation = '<div class="links-navigation">' ;
 
-	if ( $links_paged > 1 ) 
+	if ( $paged > 1 ) 
 		$links_navigation .= '<div class="nav-previous">' . get_previous_posts_link() . '</div>';
 	
-	if ( $found_posts > $posts_per_page * $links_paged )
+	if ( $found_posts > $posts_per_page * $paged )
 		$links_navigation .= '<div class="nav-next">' . get_next_posts_link() . '</div>';
 
 	$links_navigation .= '</div>';
@@ -295,6 +298,7 @@ function gad_reclinks_page( $content ) {
 	$links_archive = ob_get_clean();
 
 	$wp_query = $old_query;
+	$paged = $old_paged;
 	wp_reset_query();
 
 	return $content . $links_archive . $links_navigation;
