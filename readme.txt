@@ -3,8 +3,8 @@ Contributors: goldenapples
 Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for-wordpress/
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
-Tested up to: 3.3.1
-Stable tag: 0.4
+Tested up to: 3.4
+Stable tag: 0.4.1
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
@@ -19,6 +19,10 @@ I will guarantee backwards compatibility with all data saved by the plugin, so i
 See the plugin's [wiki page on github](https://github.com/goldenapples/recommended-links/wiki) for more up-to-date documentation (its hard to keep documentation updated in multiple places).
 
 == Changelog ==
+
+= 0.4.1 =
+
+Fixes pagination bug when reclinks archive is set to front page and bug in install hook function.
 
 = 0.4 =
 

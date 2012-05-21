@@ -8,4 +8,20 @@
  */
 
 ?>
+<tr>
+	<th scope="row"></th>
+	<td></td>
+</tr>
+<tr>
+	<th scope="row"></th>
+	<td></td>
+</tr>
+<tr>
+	<th scope="row"></th>
+	<td></td>
+</tr>
+<tr>
+	<th scope="row"></th>
+	<td></td>
+</tr>
 <p>This is a placeholder for more options to come.</p>

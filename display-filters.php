@@ -7,11 +7,45 @@
  */
 
 
-add_filter('query_vars', 'gad_reclinks_add_query_vars');
+add_filter( 'query_vars', 'gad_reclinks_add_query_vars' );
 
-function gad_reclinks_add_query_vars( $query_vars ) {
-    $query_vars[] = "reclinks_sort";
-    return $query_vars;
+function gad_reclinks_add_query_vars( $vars ) {
+    array_push( $vars, 'reclinks_sort' );
+    return $vars;
+}
+
+// flush_rules() if our rules are not yet included
+add_action( 'wp_loaded','gad_reclinks_flush_rules' );
+
+function gad_reclinks_flush_rules() {
+	$rules = get_option( 'rewrite_rules' );
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+	$archive_page = $plugin_settings['page_for_reclinks'];
+	$archive_page_name = get_post( $archive_page )->post_name;
+
+	if ( !isset( $rules["({$archive_page_name})/(newest|hot|current|score|controversial)/?"] ) ) {
+		global $wp_rewrite;
+		$wp_rewrite->flush_rules();
+	}
+}
+
+add_filter( 'rewrite_rules_array', 'gad_reclinks_sortorder_rewrite' );
+
+function gad_reclinks_sortorder_rewrite( $rules ) {
+
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
+
+	if ( $archive_page = $plugin_settings['page_for_reclinks'] ) {
+
+		$archive_page_name = get_post( $archive_page )->post_name;
+		$new_rules = array( 
+			"({$archive_page_name})/(newest|hot|current|score|controversial)/page/([0-9]+)/?" => 'index.php?pagename=$matches[1]&reclinks_sort=$matches[2]&paged=$matches[3]',
+			"({$archive_page_name})/(newest|hot|current|score|controversial)/?" => 'index.php?pagename=$matches[1]&reclinks_sort=$matches[2]'
+		);
+		$rules = $new_rules + $rules;
+
+		return $rules;
+	}
 }
 
 
@@ -262,6 +296,7 @@ function gad_reclinks_page( $content ) {
 		return $content;
 
 	$links_paged = ( isset( $wp_query->query['paged'] ) ) ? $wp_query->query['paged'] : 1;
+	$links_sort = ( isset( $wp_query->query_vars['reclinks_sort'] ) ) ? $wp_query->query_vars['reclinks_sort'] : $plugin_settings['sort_order'];
 	$posts_per_page = ( isset( $plugin_settings['posts_per_page'] ) ) ? $plugin_settings['posts_per_page'] : 25;
 
 	// Backup old query, so it doesn't throw off conditionals elsewhere
@@ -270,7 +305,7 @@ function gad_reclinks_page( $content ) {
 
 	$wp_query = new WP_Query( array(
 		'post_type' => 'reclink',
-		'reclinks_sort' => $plugin_settings['sort_order'],
+		'reclinks_sort' => $links_sort,
 		'posts_per_page' => $posts_per_page,
 		'paged' => $links_paged
 	) );

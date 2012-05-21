@@ -15,7 +15,6 @@ function reclinks_plugin_settings() {
 	);
 	$page = ( isset($_GET['tab']) && in_array( $_GET['tab'], array_keys( $tabs ) ) ) ? $_GET['tab'] : 'general';
 
-	$current_settings = get_option( 'reclinks_options' );
 	if ( !empty( $_POST ) && check_admin_referer( 'gad-reclinks-settings', '_wpnonce') )
 		update_reclinks_settings( $page );
 	$current_settings = get_option( 'reclinks_plugin_options' );
