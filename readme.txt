@@ -4,7 +4,7 @@ Donate link: http://goldenapplesdesign.com/projects/recommended-links-plugin-for
 Tags: social bookmarking, sharing, voting, reddit, digg
 Requires at least: 3.2.1
 Tested up to: 3.4
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 
 A sort of "Reddit clone" that allows users to post links, up- or down-vote them, and comment on them.
 
@@ -19,6 +19,12 @@ I will guarantee backwards compatibility with all data saved by the plugin, so i
 See the plugin's [wiki page on github](https://github.com/goldenapples/recommended-links/wiki) for more up-to-date documentation (its hard to keep documentation updated in multiple places).
 
 == Changelog ==
+
+= 0.4.2 =
+
+Fixes a couple of bugs relating to displaying the plugin's widgets on a page that includes a comments query (the author and the score of all links in the widget would be taken from the last comment displayed on the page.
+
+Also, includes an option to allow unregistered users to post for the the first time.
 
 = 0.4.1 =
 
@@ -76,5 +82,5 @@ I built a version 0.1 back in 2010 for a personal project, which was only half c
 
 == Upgrade Notice ==
 
-= 0.4 =
-This update introduces a bookmarklet that can be used for easier submission of links, and some other features.
+= 0.4.2
+Mostly bugfixes; also includes an option to allow unregistered users to post links.
