@@ -18,13 +18,19 @@ function gad_reclinks_add_query_vars( $vars ) {
 add_action( 'wp_loaded','gad_reclinks_flush_rules' );
 
 function gad_reclinks_flush_rules() {
+	global $wp_rewrite;
+
+	if ( !$wp_rewrite->using_permalinks() )
+		return;
+
 	$rules = get_option( 'rewrite_rules' );
 	$plugin_settings = get_option( 'reclinks_plugin_options' );
 	$archive_page = $plugin_settings['page_for_reclinks'];
-	$archive_page_name = get_post( $archive_page )->post_name;
+	if ( !$archive_page )
+		return;
 
+	$archive_page_name = get_post( $archive_page )->post_name;
 	if ( !isset( $rules["({$archive_page_name})/(newest|hot|current|score|controversial)/?"] ) ) {
-		global $wp_rewrite;
 		$wp_rewrite->flush_rules();
 	}
 }
