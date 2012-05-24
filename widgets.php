@@ -85,8 +85,10 @@ function gad_reclinks_widgets() {
 				echo $before_title . $title . $after_title;
 
 
-			global $wp_query;
+			global $wp_query, $comment;
 			$old_query = $wp_query;
+			$old_comment_query = $GLOBALS['comment'] = $comment;
+			unset( $comment, $GLOBALS['comment'] );
 
 			$wp_query = new WP_Query( array(
 				'post_type' => 'reclink',
@@ -98,6 +100,7 @@ function gad_reclinks_widgets() {
 				include( 'loop-reclinks.php' );
 
 			$wp_query = $old_query;
+			$GLOBALS['comment'] = $old_comment_query;
 
 			if ( $instance['links'] !== 'none' ):
 
