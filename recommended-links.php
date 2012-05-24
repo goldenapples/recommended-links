@@ -134,7 +134,10 @@ function gad_add_reclink( $reclink ) {
 
 	// Check to see that user is authorized to add link
 	if ( !$plugin_settings['allow-unregistered-post'] && !current_user_can( 'add_reclink' ) )
-		return false;
+		{
+			error_log ( 'unauthorixed user tried to post link: ' . print_r( $reclink, true ) );
+			return false;
+		}
 
 	// Check to see if that link already exists
 	$link_exists = get_posts( array(
@@ -154,9 +157,11 @@ function gad_add_reclink( $reclink ) {
 		else return ( $t );
 	}
 
+	$author = ( is_user_logged_in() ) ? $current_user->ID : $plugin_settings['anonymous-links-author'];
+
 	$link_ID = wp_insert_post( array(
 		'post_type' 	=> 'reclink',
-		'post_author' 	=> $current_user->ID,
+		'post_author' 	=> $author,
 		'post_title' 	=> $reclink['reclink_title'],
 		'post_content'	=> $reclink['reclink_description'],
 		'post_status'	=> 'publish'

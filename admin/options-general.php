@@ -15,6 +15,7 @@
 		<td>
 			<?php wp_dropdown_pages(
 				array(
+					'name' => 'page_for_reclinks',
 					'show_option_none' => __('None (use default archive)', 'gad_reclinks'),
 					'exclude' => array( get_option('page_for_posts') ),
 					'selected' => $current_settings['page_for_reclinks']
@@ -25,7 +26,7 @@
 	</tr>
 	<tr>
 		<th scope="row">
-			<label for="page_for_reclinks"><?php _e( 'Default Sort Order:', 'gad_reclinks' ); ?></label>
+			<label for="sort_order"><?php _e( 'Default Sort Order:', 'gad_reclinks' ); ?></label>
 		</th>
 		<td>
 			<select id="sort_order" name="sort_order">
@@ -63,12 +64,16 @@
 				<label for="allow-unregistered-vote"><?php _e( 'Allow unregistered users to vote?', 'gad_reclinks' ); ?></label>
 				<br><span class="description"><?php _e('(Votes will be logged by IP address.)', 'gad_reclinks' ); ?></span>
 			</p>
-	<!---
 			<p>
 				<input type="checkbox" name="allow-unregistered-post" <?php checked( $current_settings['allow-unregistered-post'] ); ?>/>
 				<label for="allow-unregistered-post"><?php _e( 'Allow unregistered users to post new links?', 'gad_reclinks' ); ?></label>
 			</p>
-	-->
+			<p class="description"><?php _e( 'If unregistered users are allowed to post links, choose an author to assign to those links:', 'gad_reclinks' ); ?></p>
+			<?php wp_dropdown_users( array(
+				'name' => 'anonymous-links-author',
+				'selected' => ( isset( $current_settings['anonymous-links-author'] ) ) ? $current_settings['anonymous-links-author'] : null,
+				)
+			); ?>
 		</td>
 	</tr>
 	<tr>

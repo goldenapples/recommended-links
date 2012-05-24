@@ -22,7 +22,9 @@ function gad_reclinks_widgets() {
 
 		function widget($args, $instance) {
 		// prints the widget
-			if ( !current_user_can('add_reclink') )
+			$plugin_settings = get_option('reclinks_plugin_options');
+
+			if ( !$plugin_settings['allow-unregistered-vote'] && !current_user_can('add_reclink') )
 				return;
 			extract($args, EXTR_SKIP);
 			echo $before_widget;

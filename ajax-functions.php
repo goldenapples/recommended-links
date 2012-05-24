@@ -48,10 +48,11 @@ function reclink_frontend_entries() {
 }
 
 
+add_action( 'wp_ajax_nopriv_add_reclink', 'gad_reclinks_ajax_add' );
 add_action( 'wp_ajax_add_reclink', 'gad_reclinks_ajax_add' );
 
 function gad_reclinks_ajax_add() {
-	$plugin_settings = get_option( 'reclinks_plugin_settings' );
+	$plugin_settings = get_option( 'reclinks_plugin_options' );
 
 	if ( !$plugin_settings['allow-unregistered-post'] && !current_user_can( 'add_reclink' ) )
 		die( json_encode( array( 'exception' => 'Current user is not authorized to add links' ) ) );
@@ -62,7 +63,7 @@ function gad_reclinks_ajax_add() {
 		'reclink_description' => wp_filter_post_kses( $_POST['reclink_description'] ),
 		'reclink_taxes' => isset( $_POST['reclink_taxes'] ) ? $_POST['reclink_taxes'] : null
 	);
-
+	
 	$link = gad_add_reclink( $reclink );
 	echo json_encode( get_post( $link ) );
 	die();

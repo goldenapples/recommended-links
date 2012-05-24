@@ -51,11 +51,12 @@ function update_reclinks_settings( $page ) {
 
 	switch ( $page ) :
 		case 'general':
-			$settings['page_for_reclinks'] = intval( $_POST['page_id'] );
+			$settings['page_for_reclinks'] = intval( $_POST['page_for_reclinks'] );
 			$settings['sort_order'] = $_POST['sort_order'];
 			$settings['tax'] = ( isset( $_POST['tax'] ) ) ? $_POST['tax'] : array();
 			$settings['allow-unregistered-vote'] = (isset($_POST['allow-unregistered-vote']) && true == $_POST['allow-unregistered-vote']);
 			$settings['allow-unregistered-post'] = (isset($_POST['allow-unregistered-post']) && true == $_POST['allow-unregistered-post']);
+			$settings['anonymous-links-author'] = intval($_POST['anonymous-links-author']); 
 			$settings['vote-on-comments'] = (isset($_POST['vote-on-comments']) && true == $_POST['vote-on-comments']);
 
 			// no UI for this yet, but its gotta be in there
