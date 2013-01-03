@@ -32,7 +32,7 @@ function reclinks_plugin_settings() {
 } ?>
 </h3>
 		<?php if ( 'about' == $page ) {
-				require( 'admin/options-about.php' ); 
+				require( 'admin/options-about.php' );
 			} else { ?>
 		<form method="post">
 			<table class="form-table">
@@ -56,7 +56,7 @@ function update_reclinks_settings( $page ) {
 			$settings['tax'] = ( isset( $_POST['tax'] ) ) ? $_POST['tax'] : array();
 			$settings['allow-unregistered-vote'] = (isset($_POST['allow-unregistered-vote']) && true == $_POST['allow-unregistered-vote']);
 			$settings['allow-unregistered-post'] = (isset($_POST['allow-unregistered-post']) && true == $_POST['allow-unregistered-post']);
-			$settings['anonymous-links-author'] = intval($_POST['anonymous-links-author']); 
+			$settings['anonymous-links-author'] = intval($_POST['anonymous-links-author']);
 			$settings['vote-on-comments'] = (isset($_POST['vote-on-comments']) && true == $_POST['vote-on-comments']);
 
 			// no UI for this yet, but its gotta be in there
@@ -111,7 +111,7 @@ add_filter( 'manage_edit-reclink_sortable_columns', 'reclink_column_register_sor
 
 function reclink_column_register_sortable( $columns ) {
 	$columns['vote-score'] = 'vote-score';
- 
+
 	return $columns;
 }
 
@@ -124,7 +124,7 @@ function votescore_column_orderby( $vars ) {
 			'orderby' => 'meta_value_num'
 		) );
 	}
- 
+
 	return $vars;
 }
 
@@ -150,6 +150,7 @@ function save_edited_reclink_href( $post_ID ) {
 		return;
 
 	if ( isset( $_POST['post_type'] ) && 'reclink' === $_POST['post_type'] )
-		update_post_meta( $post_ID, '_href', $_POST['_href'] );
+		if ( isset( $_POST['_href'] ) )
+			update_post_meta( $post_ID, '_href', $_POST['_href'] );
 
 }
