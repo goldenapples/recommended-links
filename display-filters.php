@@ -2,7 +2,7 @@
 
 /**
  * Query filters for reclinks
- * 
+ *
  *
  */
 
@@ -44,7 +44,7 @@ function gad_reclinks_sortorder_rewrite( $rules ) {
 	if ( $archive_page = $plugin_settings['page_for_reclinks'] ) {
 
 		$archive_page_name = get_post( $archive_page )->post_name;
-		$new_rules = array( 
+		$new_rules = array(
 			"({$archive_page_name})/(newest|hot|current|score|controversial)/page/([0-9]+)/?" => 'index.php?pagename=$matches[1]&reclinks_sort=$matches[2]&paged=$matches[3]',
 			"({$archive_page_name})/(newest|hot|current|score|controversial)/?" => 'index.php?pagename=$matches[1]&reclinks_sort=$matches[2]'
 		);
@@ -64,7 +64,7 @@ function gad_reclinks_sortby( $query ) {
 
 	if ( !isset( $query->query_vars['post_type'] ) || $query->query_vars['post_type'] !== 'reclink')
 		return $query;
-	
+
 	if ( is_admin() )
 		return $query;
 
@@ -73,7 +73,7 @@ function gad_reclinks_sortby( $query ) {
 		$query->set( 'posts_per_page', $posts_per_page );
 	}
 
-	// if any taxonomies are enabled for recommended links post type (in plugin settings), they can be used to 
+	// if any taxonomies are enabled for recommended links post type (in plugin settings), they can be used to
 	// filter archive pages. If a taxonomy term is passed in query string, use that to modify the query
 
 	if ( $taxonomies = $plugin_settings['tax'] ) {
@@ -89,18 +89,18 @@ function gad_reclinks_sortby( $query ) {
 		$query->set( 'tax_query', $tax_query );
 	}
 
-	// Sort order is determined by plugin defaults, and can be 
+	// Sort order is determined by plugin defaults, and can be
 	// overriden by query parameter "reclinks_sort" or query string argument "sort"
-	
+
 	$sort_order = ( isset( $plugin_settings['sort_order'] ) ) ? $plugin_settings['sort_order'] : 'current';
 
 	if ( isset( $query->query_vars['reclinks_sort'] ) && in_array(
-			$query->query_vars['reclinks_sort'], 
+			$query->query_vars['reclinks_sort'],
 			array( 'newest', 'hot', 'current', 'score', 'controversial' ) ) )
 		$sort_order = $query->query_vars['reclinks_sort'];
 
 	if ( isset( $_GET['sort'] ) && in_array(
-			$_GET['sort'], 
+			$_GET['sort'],
 			array( 'newest', 'hot', 'current', 'score', 'controversial' ) ) )
 		$sort_order = $_GET['sort'];
 
@@ -190,8 +190,8 @@ function gad_reclinks_orderby( $orderby ) {
 
 
 /**
- * By default, filters the_content to add the vote box above the content 
- * (the link description). If you would like to add the vote box in a different 
+ * By default, filters the_content to add the vote box above the content
+ * (the link description). If you would like to add the vote box in a different
  * location, you can remove this filter and include the template tag
  * reclinks_votebox() in your theme files.
  *
@@ -212,12 +212,12 @@ function gad_reclinks_show_votelinks( $content ) {
 
 
 /**
- * By default, this function filters comment_text to add the vote box above the 
+ * By default, this function filters comment_text to add the vote box above the
  * comment text IF the setting "Enable voting / points tally on comments" is on.
- * If you would like to add the vote box in a different location, you can remove 
+ * If you would like to add the vote box in a different location, you can remove
  * this filter and include the template tag reclinks_votebox() in your comment
  * callback function.
- * 
+ *
  */
 add_filter( 'comment_text', 'reclinks_comment_show_votelinks' );
 
@@ -229,7 +229,7 @@ function reclinks_comment_show_votelinks( $comment_text, $comment = null ) {
 
 	if ( is_admin() )
 		return $comment_text;
-	
+
 	global $post;
 	if ( $post->post_type !== 'reclink' )
 		return $comment_text;
@@ -261,12 +261,12 @@ function reclinks_domain( $echo = true, $before = '(', $after = ')' ) {
 	global $post;
 	if ( $href = get_post_meta( $post->ID, '_href', true ) )
 		$host = parse_url( $href, PHP_URL_HOST );
-	
+
 	if ( empty( $host ) ) return;
 
 	if ( $echo )
 		echo $before . $host . $after;
-	else 
+	else
 		return $before . $host . $after;
 }
 
@@ -285,7 +285,7 @@ function reclinks_favicon( $echo = true ) {
  *
  * Uses the WP_Query object to retrieve posts, the loop-reclinks.php template to display
  * them, and the WordPress functions get_previous_posts_page and get_next_posts_page.
- * In short, it basically functions just like a regular archive page, except for the 
+ * In short, it basically functions just like a regular archive page, except for the
  * template and the WordPress conditional tags, (ie. `is_archive()` will return false).
  */
 add_filter( 'the_content', 'gad_reclinks_page' );
@@ -294,7 +294,7 @@ function gad_reclinks_page( $content ) {
 	$plugin_settings = get_option( 'reclinks_plugin_options' );
 
 	if ( !$plugin_settings['page_for_reclinks'] || !is_page( $plugin_settings['page_for_reclinks'] ) )
-		return $content;	
+		return $content;
 
 	global $wp_the_query, $wp_query, $paged;
 
@@ -325,9 +325,9 @@ function gad_reclinks_page( $content ) {
 
 	$links_navigation = '<div class="links-navigation">' ;
 
-	if ( $paged > 1 ) 
+	if ( $paged > 1 )
 		$links_navigation .= '<div class="nav-previous">' . get_previous_posts_link() . '</div>';
-	
+
 	if ( $found_posts > $posts_per_page * $paged )
 		$links_navigation .= '<div class="nav-next">' . get_next_posts_link() . '</div>';
 
