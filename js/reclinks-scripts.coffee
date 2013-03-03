@@ -25,11 +25,11 @@ jQuery ($) ->
 					window.location.href = reclinks.loginUrl + '&msg=reclinks-login'
 				else
 					button.addClass 'current-vote'
-					form.find('.votescore').text( response.newCount );
+					form.find('.votescore').text( response.newCount )
 		return false
 	$('#reclink_URL').bind 'change', (event) ->
 		linkUrl = $(this).val()
-		if linkUrl is '' return false
+		return false if linkUrl is ''
 		$.ajax 'http://query.yahooapis.com/v1/public/yql',
 			type: 'get',
 			data: {
