@@ -1,0 +1,25 @@
+{
+  "name": "recommended-links",
+  "version": "0.5.0",
+  "description": "A \"reddit clone\" that runs in Wordpress.",
+  "main": "recommended-links.php",
+  "dependencies": {
+    "grunt": "~0.4.0"
+  },
+  "devDependencies": { 
+    "grunt": "~0.4.0",
+    "grunt-contrib-coffee": "~0.5.0",
+    "grunt-contrib-jshint": "~0.1.1",
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github-goldenapples:goldenapples/recommended-links.git"
+  },
+  "author": "goldenapples",
+  "license": "GPLv2",
+  "readmeFilename": "readme.txt",
+  "gitHead": "339cdba2f1dcae53852b19bd5c4421847b9affd8"
+}
